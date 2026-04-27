@@ -90,11 +90,9 @@ API будет доступно по адресу: http://127.0.0.1:8000/
 ### Достижения
 
 - `GET /achievements/` - список достижений
-- `POST /achievements/` - создать достижение
 - `GET /achievements/{id}/` - получить достижение
-- `PUT /achievements/{id}/` - обновить достижение
-- `PATCH /achievements/{id}/` - частично обновить достижение
-- `DELETE /achievements/{id}/` - удалить достижение
+
+Достижения предзаполнены в проекте (15 штук) и доступны только для чтения.
 
 ## Примеры JSON
 
@@ -124,11 +122,7 @@ API будет доступно по адресу: http://127.0.0.1:8000/
 	"color": "White",
 	"birth_year": 2020,
 	"owner": 1,
-	"achievements": [
-		{
-			"achievement_name": "Лучший кот"
-		}
-	]
+	"achievements": [1, 3, 7]
 }
 ```
 
@@ -140,12 +134,7 @@ API будет доступно по адресу: http://127.0.0.1:8000/
 	"name": "Барсик",
 	"color": "White",
 	"birth_year": 2020,
-	"achievements": [
-		{
-			"id": 1,
-			"achievement_name": "Лучший кот"
-		}
-	],
+	"achievements": [1, 3, 7],
 	"owner": 1,
 	"age": 6
 }
@@ -155,6 +144,7 @@ API будет доступно по адресу: http://127.0.0.1:8000/
 
 - `color` принимает только одно из значений: `Gray`, `Black`, `White`, `Ginger`, `Mixed`.
 - `owner` должен быть id существующего пользователя.
+- `achievements` передаются списком id, например: `[1, 3, 7]`.
 - `birth_year` - целое число (в текущей реализации без проверки на будущий год).
 
 ## Работа с API через Postman
@@ -224,11 +214,7 @@ API будет доступно по адресу: http://127.0.0.1:8000/
 	"color": "White",
 	"birth_year": 2021,
 	"owner": 1,
-	"achievements": [
-		{
-			"achievement_name": "Поймал лазер"
-		}
-	]
+	"achievements": [1, 2]
 }
 ```
 
