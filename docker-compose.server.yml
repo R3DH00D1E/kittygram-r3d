@@ -1,0 +1,18 @@
+services:
+  web:
+    image: ${IMAGE}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SQLITE_PATH: /app/data/db.sqlite3
+      STATIC_ROOT: /app/staticfiles
+    ports:
+      - "8000:8000"
+    volumes:
+      - sqlite_data:/app/data
+      - static_data:/app/staticfiles
+
+volumes:
+  sqlite_data:
+  static_data:

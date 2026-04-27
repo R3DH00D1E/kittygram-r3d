@@ -3,3 +3,5 @@ djangorestframework==3.12.4
 PyJWT==2.1.0
 djangorestframework-simplejwt==4.8.0
 djoser==2.1.0
+gunicorn==22.0.0
+whitenoise==6.7.0
