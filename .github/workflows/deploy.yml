@@ -84,14 +84,15 @@ jobs:
             set -e
             APP_DIR="${{ secrets.SERVER_APP_DIR }}"
             GHCR_USER_LC="$(echo "${{ secrets.GHCR_USERNAME }}" | tr '[:upper:]' '[:lower:]')"
+            IMAGE_REF="${{ env.REGISTRY }}/${GHCR_USER_LC}/${{ env.IMAGE_NAME }}:latest"
             mkdir -p "$APP_DIR"
             cd "$APP_DIR"
 
-            cat > .env << 'EOF'
+            cat > .env << EOF
             DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
             DJANGO_DEBUG=False
             DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
-            IMAGE=${{ env.REGISTRY }}/$GHCR_USER_LC/${{ env.IMAGE_NAME }}:latest
+            IMAGE=${IMAGE_REF}
             EOF
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "$GHCR_USER_LC" --password-stdin
