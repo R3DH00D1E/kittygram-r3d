@@ -26,13 +26,15 @@ class CatSerializer(serializers.ModelSerializer):
         queryset=Achievement.objects.all(),
         required=False
     )
+    image = serializers.ImageField(required=False, allow_null=True)
     color = serializers.ChoiceField(choices=CHOICES)
     age = serializers.SerializerMethodField()
 
     class Meta:
         model = Cat
         fields = ('id', 'name', 'color', 'birth_year', 'achievements', 'owner',
-                  'age')
+                  'image', 'age')
+        read_only_fields = ('owner',)
 
     def get_age(self, obj):
         return dt.datetime.now().year - obj.birth_year

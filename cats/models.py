@@ -25,6 +25,7 @@ class Cat(models.Model):
     birth_year = models.IntegerField()
     owner = models.ForeignKey(
         User, related_name='cats', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='cats/', null=True, blank=True)
     achievements = models.ManyToManyField(Achievement, through='AchievementCat')
 
     def __str__(self):

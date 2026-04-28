@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Добавить кота</title>
+    <link rel="stylesheet" href="{% static 'cats/retro.css' %}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar panel">
+            <h1>Добавить кота</h1>
+        </header>
+        <main class="panel">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label>Имя: <input type="text" name="name" required></label>
+                </div>
+                <div>
+                    <label>Цвет:
+                        <select name="color">
+                            {% for val,label in choices %}
+                                <option value="{{ val }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+                <div>
+                    <label>Год рождения: <input type="number" name="birth_year" required></label>
+                </div>
+                <div>
+                    <label>Фото: <input type="file" name="image" accept="image/*"></label>
+                </div>
+                <div style="margin-top:12px"><button type="submit" class="button">Создать</button></div>
+            </form>
+        </main>
+    </div>
+</body>
+</html>

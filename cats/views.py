@@ -5,15 +5,50 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User as DjangoUser
 from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Achievement, Cat, User
 
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
 
 
+class IsOwnerOrAdmin:
+    """Helper permission: owner or admin allowed for unsafe actions."""
+    @staticmethod
+    def has_object_permission(request, obj):
+        user = request.user
+        if not user.is_authenticated:
+            return False
+        return user.is_staff or user.is_superuser or obj.owner_id == user.id
+
+
 class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
     serializer_class = CatSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not IsOwnerOrAdmin.has_object_permission(request, instance):
+            return Response({'detail': 'Недостаточно прав.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not IsOwnerOrAdmin.has_object_permission(request, instance):
+            return Response({'detail': 'Недостаточно прав.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not IsOwnerOrAdmin.has_object_permission(request, instance):
+            return Response({'detail': 'Недостаточно прав.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -124,6 +159,27 @@ def admin_dashboard(request):
         'featured_cats': featured_cats,
     }
     return render(request, 'cats/admin_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def create_cat_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        color = request.POST.get('color')
+        birth_year = request.POST.get('birth_year')
+        image = request.FILES.get('image')
+
+        Cat.objects.create(
+            name=name,
+            color=color,
+            birth_year=int(birth_year),
+            owner=request.user,
+            image=image
+        )
+        return redirect('home')
+
+    choices = CHOICES
+    return render(request, 'cats/create_cat.html', {'choices': choices})
 
 
 @require_http_methods(["GET", "POST"])
