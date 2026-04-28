@@ -129,13 +129,13 @@ API доступно по адресу: http://127.0.0.1:8000/
 ```bash
 docker build -t kittygram:local .
 
-docker run --rm -p 8000:8000 \
+docker run --rm -p 80:80 \
   -e DJANGO_SECRET_KEY='change-me' \
   -e DJANGO_ALLOWED_HOSTS='127.0.0.1,localhost' \
   kittygram:local
 ```
 
-После запуска API будет доступно на http://127.0.0.1:8000/
+После запуска API будет доступно на http://127.0.0.1/
 
 ## CI/CD через GitHub Actions
 
@@ -194,7 +194,9 @@ docker compose -f docker-compose.server.yml --env-file .env ps
 ```
 
 Приложение должно открываться по адресу:
-- `http://<ваш-server-ip>:8000/`
+- `http://<ваш-server-ip>/`
+
+Если контейнер запущен через `docker compose` с `restart: unless-stopped`, то после перезагрузки сервера Docker поднимет его автоматически, когда сам сервис Docker стартует вместе с системой.
 
 ## Полезно при отладке
 
