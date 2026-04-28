@@ -97,6 +97,7 @@ jobs:
             DJANGO_DEBUG=False
             DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
             IMAGE=${IMAGE_REF}
+            WEB_PORT=8080
             EOF
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "$GHCR_USER_LC" --password-stdin
