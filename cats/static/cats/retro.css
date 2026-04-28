@@ -1,13 +1,19 @@
 :root {
     color-scheme: light;
-    --paper: #f3e8c8;
-    --paper-2: #fff8e8;
-    --ink: #272117;
-    --accent: #0b4f9c;
-    --accent-2: #b43c1f;
-    --frame: #8e7750;
-    --shadow: rgba(52, 35, 12, 0.18);
-    --glow: rgba(255, 255, 255, 0.8);
+    --desktop: #c0c0c0;
+    --window-face: #d4d0c8;
+    --window-dark: #808080;
+    --window-light: #ffffff;
+    --window-shadow: #000000;
+    --titlebar: #000080;
+    --titlebar-active: #0000a0;
+    --title-text: #ffffff;
+    --ink: #000000;
+    --accent: #000080;
+    --accent-2: #800000;
+    --chrome: #b5b5b5;
+    --shadow: rgba(0, 0, 0, 0.18);
+    --glow: rgba(255, 255, 255, 0.75);
 }
 
 * {
@@ -21,12 +27,9 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
     color: var(--ink);
-    background:
-        radial-gradient(circle at top, rgba(255,255,255,0.72), transparent 34%),
-        linear-gradient(180deg, #f8eecf 0%, #e6d2a4 100%);
-    background-attachment: fixed;
+    background: var(--desktop);
 }
 
 body::before {
@@ -34,11 +37,12 @@ body::before {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.25;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%) -8px 0 / 16px 16px,
+        linear-gradient(225deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%) -8px 0 / 16px 16px,
+        linear-gradient(315deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0 / 16px 16px,
+        linear-gradient(45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0 / 16px 16px;
+    opacity: 0.8;
 }
 
 a {
@@ -46,14 +50,17 @@ a {
 }
 
 .page-shell {
-    width: min(1180px, calc(100% - 24px));
+    width: min(1100px, calc(100% - 18px));
     margin: 16px auto 32px;
 }
 
 .panel {
-    border: 2px solid var(--frame);
-    background: linear-gradient(180deg, var(--paper-2), #f6e7bf);
-    box-shadow: 0 10px 28px var(--shadow), inset 0 1px 0 var(--glow);
+    border: 1px solid var(--window-shadow);
+    background: var(--window-face);
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark),
+        2px 2px 0 rgba(0, 0, 0, 0.18);
 }
 
 .topbar,
@@ -93,7 +100,7 @@ a {
 .button,
 .status-box span {
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
 }
 
 .kicker,
@@ -103,12 +110,12 @@ a {
 .section-head span,
 .status-box small,
 .badge {
-    font-family: 'Trebuchet MS', Verdana, sans-serif;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
 }
 
 .kicker {
     color: var(--accent-2);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 h1,
@@ -116,13 +123,13 @@ h2,
 h3,
 h4 {
     margin: 0;
-    font-family: 'Trebuchet MS', Verdana, sans-serif;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
 }
 
 h1 {
     font-size: clamp(2.4rem, 5vw, 4.6rem);
     color: var(--accent);
-    text-shadow: 2px 2px 0 rgba(255,255,255,0.85), 4px 4px 0 rgba(11,79,156,0.12);
+    text-shadow: 1px 1px 0 #ffffff;
 }
 
 .subtitle {
@@ -141,8 +148,11 @@ h1 {
 .status-box div {
     padding: 12px;
     text-align: center;
-    border: 1px solid var(--frame);
-    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--window-shadow);
+    background: #efefef;
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
 }
 
 .status-box span {
@@ -156,7 +166,7 @@ h1 {
     flex-wrap: wrap;
     gap: 8px;
     padding: 10px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .menu a,
@@ -166,16 +176,18 @@ h1 {
     justify-content: center;
     min-height: 42px;
     padding: 0 16px;
-    border: 2px solid #6f5a37;
-    background: linear-gradient(180deg, #fffef4, #dcc48a);
+    border: 1px solid var(--window-shadow);
+    background: linear-gradient(180deg, #f7f7f7, #d6d6d6);
     text-decoration: none;
     color: var(--ink);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
 }
 
 .menu a:hover,
 .button:hover {
-    transform: translateY(-1px);
+    background: linear-gradient(180deg, #ffffff, #dcdcdc);
 }
 
 .layout {
@@ -196,13 +208,16 @@ h1 {
 }
 
 .flash {
-    color: var(--accent-2);
+    color: var(--title-text);
     font-size: 0.8rem;
     margin-bottom: 8px;
-    background: #fff3;
+    background: linear-gradient(180deg, var(--titlebar-active), var(--titlebar));
     display: inline-block;
     padding: 4px 8px;
-    border: 1px dashed currentColor;
+    border: 1px solid #000000;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.45),
+        inset -1px -1px 0 rgba(0,0,0,0.35);
     animation: blink 1.3s steps(2, end) infinite;
 }
 
@@ -224,7 +239,7 @@ h1 {
 }
 
 .button-alt {
-    background: linear-gradient(180deg, #fff, #f0d3a0);
+    background: linear-gradient(180deg, #f8f8f8, #cfcfcf);
 }
 
 .visitor-card {
@@ -233,14 +248,11 @@ h1 {
     justify-content: center;
     gap: 10px;
     padding: 18px;
-    border: 2px dashed #9f8052;
-    background: repeating-linear-gradient(
-        135deg,
-        rgba(255,255,255,0.45),
-        rgba(255,255,255,0.45) 12px,
-        rgba(243,232,200,0.7) 12px,
-        rgba(243,232,200,0.7) 24px
-    );
+    border: 1px solid var(--window-shadow);
+    background: #dcdcdc;
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
 }
 
 .visitor-card strong {
@@ -272,6 +284,22 @@ h1 {
     font-size: 0.72rem;
 }
 
+.sidebar h3,
+.featured h3,
+.gallery h3 {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 8px;
+    margin-bottom: 14px;
+    background: linear-gradient(180deg, var(--titlebar-active), var(--titlebar));
+    color: var(--title-text);
+    border: 1px solid #000000;
+    box-shadow:
+        inset 1px 1px 0 rgba(255,255,255,0.45),
+        inset -1px -1px 0 rgba(0,0,0,0.35);
+}
+
 .news-list {
     padding-left: 20px;
     display: grid;
@@ -287,9 +315,11 @@ h1 {
 }
 
 .cat-card {
-    border: 1px solid #9b7d4e;
-    background: rgba(255,255,255,0.48);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+    border: 1px solid var(--window-shadow);
+    background: #ececec;
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
     overflow: hidden;
 }
 
@@ -297,13 +327,10 @@ h1 {
     display: grid;
     place-items: center;
     aspect-ratio: 4 / 3;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9), transparent 28%),
-        linear-gradient(135deg, #8fb8dd, #d5a977 60%, #8c6b45);
-    color: white;
+    background: linear-gradient(180deg, #dbe7f3, #a6a6a6);
+    color: #000000;
     font-size: 3rem;
     font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
 
 .cat-meta {
@@ -329,9 +356,12 @@ h1 {
 
 .badge {
     padding: 8px 10px;
-    border: 1px solid #94774b;
-    background: linear-gradient(180deg, #fff8e4, #ebd19a);
+    border: 1px solid var(--window-shadow);
+    background: linear-gradient(180deg, #f8f8f8, #cfcfcf);
     font-size: 0.72rem;
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
 }
 
 .gallery-strip {
@@ -344,18 +374,19 @@ h1 {
     display: grid;
     place-items: center;
     min-height: 140px;
-    border: 3px double #82673e;
-    background:
-        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(229,208,151,0.7)),
-        repeating-linear-gradient(45deg, rgba(255,255,255,0.22) 0 8px, rgba(0,0,0,0.03) 8px 16px);
-    font-family: 'Trebuchet MS', Verdana, sans-serif;
-    color: var(--accent-2);
+    border: 1px solid var(--window-shadow);
+    background: #f0f0f0;
+    box-shadow:
+        inset 1px 1px 0 var(--window-light),
+        inset -1px -1px 0 var(--window-dark);
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
+    color: var(--accent);
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
 }
 
 .snapshot-alt {
-    transform: rotate(-1.5deg);
+    transform: translateY(2px);
 }
 
 .footer {
