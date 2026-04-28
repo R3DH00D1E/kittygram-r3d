@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls import include, path
 from cats.views import (
     AchievementViewSet, CatViewSet, UserViewSet,
-    home_page, login_view, register_view, admin_dashboard, logout_view,
+    home_page, login_view, register_view, cabinet_view, admin_dashboard, logout_view,
     api_delete_cat, api_update_cat_status, api_list_ownership_statuses
 )
 from cats.views import create_cat_view
@@ -21,6 +21,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
     path('logout/', logout_view, name='logout'),
+    path('cabinet/', cabinet_view, name='cabinet'),
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('cats/create/', create_cat_view, name='create_cat'),
     path('api/cat/<int:cat_id>/delete/', api_delete_cat, name='api_delete_cat'),

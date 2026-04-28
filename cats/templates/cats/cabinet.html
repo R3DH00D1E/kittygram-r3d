@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - Kittygram</title>
+    <link rel="stylesheet" href="{% static 'cats/retro.css' %}">
+    <style>
+        .cabinet-shell {
+            min-height: 100vh;
+            padding-bottom: 32px;
+        }
+
+        .cabinet-hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .cabinet-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .cabinet-panel {
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .cabinet-title {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 0 10px;
+            background: linear-gradient(180deg, var(--titlebar-active), var(--titlebar));
+            color: var(--title-text);
+            border: 1px solid var(--window-shadow);
+            box-shadow: inset 1px 1px 0 var(--window-light), inset -1px -1px 0 var(--window-shadow);
+            margin: 0 0 12px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .summary-tile {
+            padding: 14px;
+            background: linear-gradient(180deg, #efefef, #d7d7d7);
+            border: 1px solid var(--window-shadow);
+            box-shadow: inset 1px 1px 0 var(--window-light), inset -1px -1px 0 var(--window-dark);
+        }
+
+        .summary-tile strong {
+            display: block;
+            font-size: 1.6rem;
+            color: var(--accent-2);
+            margin-bottom: 4px;
+        }
+
+        .cabinet-layout {
+            display: grid;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        .form-stack {
+            display: grid;
+            gap: 10px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+        }
+
+        .help-text {
+            font-size: 0.82rem;
+            color: #444;
+        }
+
+        .error-banner {
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid #7a0000;
+            background: #f6d7d7;
+            color: #5a0000;
+            box-shadow: inset 1px 1px 0 #fff7f7, inset -1px -1px 0 #c87a7a;
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .cat-card {
+            display: grid;
+            gap: 12px;
+            padding: 14px;
+            background: linear-gradient(180deg, #ececec, #d8d8d8);
+            border: 1px solid var(--window-shadow);
+            box-shadow: inset 1px 1px 0 var(--window-light), inset -1px -1px 0 var(--window-dark);
+        }
+
+        .cat-card-head {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .cat-preview {
+            width: 96px;
+            height: 96px;
+            border: 1px solid var(--window-shadow);
+            background: #f4f4f4;
+            box-shadow: inset 1px 1px 0 var(--window-light), inset -1px -1px 0 var(--window-dark);
+            overflow: hidden;
+            flex: 0 0 auto;
+        }
+
+        .cat-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cat-preview-placeholder {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            font-size: 2rem;
+            color: var(--accent-2);
+            font-weight: bold;
+        }
+
+        .cat-meta {
+            flex: 1 1 auto;
+        }
+
+        .cat-meta h3 {
+            margin-bottom: 6px;
+        }
+
+        .cat-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .badge-inline {
+            display: inline-flex;
+            align-items: center;
+            min-height: 22px;
+            padding: 0 8px;
+            background: #f2f2f2;
+            border: 1px solid var(--window-shadow);
+            font-size: 0.8rem;
+        }
+
+        .cat-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .cat-edit-grid .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .cat-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .muted {
+            color: #555;
+        }
+
+        .empty-state {
+            padding: 18px;
+            background: #efefef;
+            border: 1px dashed var(--window-dark);
+        }
+
+        @media (max-width: 900px) {
+            .cabinet-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell cabinet-shell">
+        <header class="topbar panel cabinet-panel cabinet-hero">
+            <div>
+                <p class="kicker">personal cat cabinet</p>
+                <h1>Личный кабинет</h1>
+                <p class="subtitle">Добавляйте котов, меняйте фото и редактируйте статусы без Django admin.</p>
+                <nav class="cabinet-nav" aria-label="Навигация кабинета">
+                    <a href="{% url 'home' %}">На главную</a>
+                    <a href="#add-cat">Добавить кота</a>
+                    <a href="#my-cats">Мои коты</a>
+                    <a href="{% url 'logout' %}">Выход</a>
+                </nav>
+            </div>
+            <div class="status-box">
+                <div><span>{{ cat_count }}</span><small>my cats</small></div>
+                <div><span>{{ cat_count_with_images }}</span><small>with photos</small></div>
+                <div><span>{{ cat_count_with_status }}</span><small>with status</small></div>
+            </div>
+        </header>
+
+        {% if error_message %}
+            <div class="error-banner panel">{{ error_message }}</div>
+        {% endif %}
+
+        <section class="summary-grid">
+            <div class="summary-tile">
+                <strong>{{ cat_count }}</strong>
+                <span>Котов в кабинете</span>
+            </div>
+            <div class="summary-tile">
+                <strong>{{ cat_count_with_images }}</strong>
+                <span>Котов с фотографией</span>
+            </div>
+            <div class="summary-tile">
+                <strong>{{ ownership_statuses|length }}</strong>
+                <span>Доступных статусов</span>
+            </div>
+        </section>
+
+        <section class="cabinet-layout">
+            <article class="panel cabinet-panel" id="add-cat">
+                <h2 class="cabinet-title">Добавить кота</h2>
+                <form method="post" enctype="multipart/form-data" class="form-stack">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_cat">
+                    <div class="field">
+                        <label for="id_name">Имя</label>
+                        <input id="id_name" type="text" name="name" maxlength="16" required>
+                    </div>
+                    <div class="field">
+                        <label for="id_color">Цвет</label>
+                        <select id="id_color" name="color" required>
+                            {% for value, label in choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="id_birth_year">Год рождения</label>
+                        <input id="id_birth_year" type="number" name="birth_year" min="1980" max="{% now "Y" %}" required>
+                    </div>
+                    <div class="field">
+                        <label for="id_status">Статус владения</label>
+                        <select id="id_status" name="ownership_status">
+                            <option value="">Без статуса</option>
+                            {% for status in ownership_statuses %}
+                                <option value="{{ status.id }}">{{ status.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="id_image">Фото</label>
+                        <input id="id_image" type="file" name="image" accept="image/*">
+                        <div class="help-text">Можно загрузить фото сразу или добавить его позже в карточке кота.</div>
+                    </div>
+                    <button type="submit" class="button">Добавить кота</button>
+                </form>
+            </article>
+
+            <section class="panel cabinet-panel" id="my-cats">
+                <h2 class="cabinet-title">Мои коты</h2>
+                {% if user_cats %}
+                    <div class="cat-grid">
+                        {% for cat in user_cats %}
+                            <article class="cat-card">
+                                <div class="cat-card-head">
+                                    <div class="cat-preview">
+                                        {% if cat.image %}
+                                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                                        {% else %}
+                                            <div class="cat-preview-placeholder">{{ cat.name|first|upper }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="cat-meta">
+                                        <h3>{{ cat.name }}</h3>
+                                        <p class="muted">{{ cat.get_color_display }} · {{ cat.birth_year }} г.р.</p>
+                                        <div class="cat-badges">
+                                            <span class="badge-inline">Статус: {{ cat.ownership_status.name|default:"без статуса" }}</span>
+                                            <span class="badge-inline">Достижений: {{ cat.achievement_count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form method="post" enctype="multipart/form-data" class="form-stack">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="update_cat">
+                                    <input type="hidden" name="cat_id" value="{{ cat.id }}">
+
+                                    <div class="cat-edit-grid">
+                                        <div class="field full">
+                                            <label>Имя</label>
+                                            <input type="text" name="name" value="{{ cat.name }}" maxlength="16" required>
+                                        </div>
+                                        <div class="field">
+                                            <label>Цвет</label>
+                                            <select name="color" required>
+                                                {% for value, label in choices %}
+                                                    <option value="{{ value }}" {% if cat.color == value %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="field">
+                                            <label>Год рождения</label>
+                                            <input type="number" name="birth_year" min="1980" max="{% now "Y" %}" value="{{ cat.birth_year }}" required>
+                                        </div>
+                                        <div class="field full">
+                                            <label>Статус владения</label>
+                                            <select name="ownership_status">
+                                                <option value="">Без статуса</option>
+                                                {% for status in ownership_statuses %}
+                                                    <option value="{{ status.id }}" {% if cat.ownership_status_id == status.id %}selected{% endif %}>{{ status.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="field full">
+                                            <label>Новая фотография</label>
+                                            <input type="file" name="image" accept="image/*">
+                                        </div>
+                                        <div class="field full">
+                                            <label>
+                                                <input type="checkbox" name="remove_image" value="1">
+                                                Удалить текущее фото
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="cat-actions">
+                                        <button type="submit" class="button">Сохранить</button>
+                                    </div>
+                                </form>
+
+                                <form method="post" class="cat-actions">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete_cat">
+                                    <input type="hidden" name="cat_id" value="{{ cat.id }}">
+                                    <button type="submit" class="button button-alt" onclick="return confirm('Удалить кота {{ cat.name }}?')">Удалить кота</button>
+                                </form>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        У вас пока нет котов. Добавьте первого питомца в форму слева.
+                    </div>
+                {% endif %}
+            </section>
+        </section>
+    </div>
+</body>
+</html>

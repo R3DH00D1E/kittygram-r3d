@@ -1,5 +1,5 @@
 from django.db.models import Count
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User as DjangoUser
@@ -73,10 +73,7 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            # Check if user is admin
-            if user.is_staff or user.is_superuser:
-                return redirect('admin_dashboard')
-            return redirect('home')
+            return redirect('cabinet')
         else:
             context = {'error': 'Неверное имя пользователя или пароль'}
             return render(request, 'cats/login.html', context)
@@ -123,7 +120,7 @@ def register_view(request):
             
             # Log the user in
             login(request, user)
-            return redirect('home')
+            return redirect('cabinet')
         except Exception as e:
             context = {'error': f'Ошибка при регистрации: {str(e)}'}
             return render(request, 'cats/register.html', context)
@@ -138,29 +135,97 @@ def register_view(request):
     return render(request, 'cats/register.html')
 
 
-@login_required(login_url='login')
-@user_passes_test(lambda u: u.is_staff or u.is_superuser)
-def admin_dashboard(request):
-    """Admin dashboard page"""
-    if request.method == 'POST':
-        if 'logout' in request.POST:
-            logout(request)
-            return redirect('home')
-    
-    featured_cats = (
-        Cat.objects.select_related('owner')
+def _get_cabinet_context(user, error_message=''):
+    user_cats = (
+        Cat.objects.filter(owner=user)
+        .select_related('owner', 'ownership_status')
         .prefetch_related('achievements')
         .annotate(achievement_count=Count('achievements'))
-        .order_by('-id')[:6]
+        .order_by('-id')
     )
-    
-    context = {
-        'cat_count': Cat.objects.count(),
-        'user_count': User.objects.count(),
-        'achievement_count': Achievement.objects.count(),
-        'featured_cats': featured_cats,
+
+    return {
+        'cat_count': user_cats.count(),
+        'cat_count_with_images': user_cats.exclude(image='').count(),
+        'cat_count_with_status': user_cats.exclude(ownership_status__isnull=True).count(),
+        'user_cats': user_cats,
+        'choices': CHOICES,
+        'ownership_statuses': OwnershipStatus.objects.order_by('name'),
+        'error_message': error_message,
     }
-    return render(request, 'cats/admin_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def cabinet_view(request):
+    """Personal cabinet for managing user's cats."""
+    error_message = ''
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'create_cat':
+            name = (request.POST.get('name') or '').strip()
+            color = request.POST.get('color')
+            birth_year = request.POST.get('birth_year')
+            image = request.FILES.get('image')
+            status_id = request.POST.get('ownership_status')
+
+            if not name or not color or not birth_year:
+                error_message = 'Заполните имя, цвет и год рождения.'
+            else:
+                ownership_status = None
+                if status_id:
+                    ownership_status = OwnershipStatus.objects.filter(id=status_id).first()
+
+                Cat.objects.create(
+                    name=name,
+                    color=color,
+                    birth_year=int(birth_year),
+                    owner=request.user,
+                    image=image,
+                    ownership_status=ownership_status,
+                )
+                return redirect('cabinet')
+
+        elif action == 'update_cat':
+            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'), owner=request.user)
+
+            name = (request.POST.get('name') or '').strip()
+            color = request.POST.get('color')
+            birth_year = request.POST.get('birth_year')
+            status_id = request.POST.get('ownership_status')
+            new_image = request.FILES.get('image')
+
+            if not name or not color or not birth_year:
+                error_message = f'Проверьте данные для кота «{cat.name}».'
+            else:
+                cat.name = name
+                cat.color = color
+                cat.birth_year = int(birth_year)
+                cat.ownership_status = None
+                if status_id:
+                    cat.ownership_status = OwnershipStatus.objects.filter(id=status_id).first()
+
+                if request.POST.get('remove_image'):
+                    cat.image = None
+                if new_image:
+                    cat.image = new_image
+
+                cat.save()
+                return redirect('cabinet')
+
+        elif action == 'delete_cat':
+            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'), owner=request.user)
+            cat.delete()
+            return redirect('cabinet')
+
+    context = _get_cabinet_context(request.user, error_message)
+    return render(request, 'cats/cabinet.html', context)
+
+
+@login_required(login_url='login')
+def admin_dashboard(request):
+    return redirect('cabinet')
 
 
 @login_required(login_url='login')
@@ -220,23 +285,7 @@ def api_list_ownership_statuses(request):
 
 @login_required(login_url='login')
 def create_cat_view(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        color = request.POST.get('color')
-        birth_year = request.POST.get('birth_year')
-        image = request.FILES.get('image')
-
-        Cat.objects.create(
-            name=name,
-            color=color,
-            birth_year=int(birth_year),
-            owner=request.user,
-            image=image
-        )
-        return redirect('home')
-
-    choices = CHOICES
-    return render(request, 'cats/create_cat.html', {'choices': choices})
+    return redirect('cabinet')
 
 
 @require_http_methods(["GET", "POST"])

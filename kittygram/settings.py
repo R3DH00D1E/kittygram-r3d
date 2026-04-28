@@ -132,10 +132,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT', str(BASE_DIR / 'staticfiles'))
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'cats', 'static'),
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

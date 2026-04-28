@@ -1,0 +1,240 @@
+/* Retro Windows 3.1-95 theme for Django Admin */
+:root {
+    --desktop: #c0c0c0;
+    --window-face: #c0c0c0;
+    --window-dark: #808080;
+    --window-light: #ffffff;
+    --window-shadow: #000000;
+    --titlebar: #000080;
+    --titlebar-text: #ffffff;
+    --ink: #000000;
+}
+
+/* Background with retro square pattern */
+body {
+    background: var(--desktop) !important;
+    background-image:
+        linear-gradient(90deg, rgba(128,128,128,0.3) 1px, transparent 1px),
+        linear-gradient(rgba(128,128,128,0.3) 1px, transparent 1px) !important;
+    background-size: 16px 16px, 16px 16px;
+    background-position: 0 0, 8px 8px;
+    background-attachment: fixed !important;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif !important;
+}
+
+/* Admin header */
+#header {
+    background: linear-gradient(90deg, var(--titlebar) 0%, #0000c0 100%) !important;
+    border-bottom: 2px solid var(--window-dark) !important;
+    box-shadow: inset 0 1px 0 var(--window-light) !important;
+}
+
+#header h1, #header a {
+    color: var(--titlebar-text) !important;
+}
+
+/* Logo/branding */
+#branding h1 {
+    color: var(--titlebar-text) !important;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5) !important;
+}
+
+/* Navigation */
+#user-tools {
+    background: var(--window-face) !important;
+    border-bottom: 1px solid var(--window-dark) !important;
+    color: var(--ink) !important;
+}
+
+#user-tools a {
+    color: var(--titlebar) !important;
+    font-weight: bold;
+}
+
+/* Main content */
+#main {
+    background: transparent !important;
+}
+
+.module {
+    background: var(--window-face) !important;
+    border: 2px solid !important;
+    border-color: var(--window-light) var(--window-dark) var(--window-dark) var(--window-light) !important;
+    box-shadow: 1px 1px 0 var(--window-dark) !important;
+    margin-bottom: 20px;
+}
+
+/* Tables */
+.results table {
+    background: var(--window-face) !important;
+}
+
+.results thead {
+    background: var(--titlebar) !important;
+}
+
+.results thead th {
+    color: var(--titlebar-text) !important;
+    border: 1px solid var(--window-dark) !important;
+    padding: 8px !important;
+    font-weight: bold;
+}
+
+.results tbody tr {
+    border-bottom: 1px solid #ddd !important;
+}
+
+.results tbody tr:hover {
+    background: #e8e8e8 !important;
+}
+
+.results tbody td {
+    padding: 8px !important;
+    border-right: 1px solid #ddd !important;
+}
+
+.results tbody td:last-child {
+    border-right: none !important;
+}
+
+/* Links */
+a {
+    color: var(--titlebar) !important;
+}
+
+a:hover {
+    color: #800000 !important;
+}
+
+/* Buttons */
+.button, input[type="button"], input[type="submit"] {
+    background: linear-gradient(180deg, #f7f7f7, #d6d6d6) !important;
+    border: 2px solid !important;
+    border-color: var(--window-light) var(--window-dark) var(--window-dark) var(--window-light) !important;
+    color: var(--ink) !important;
+    padding: 4px 12px !important;
+    cursor: pointer !important;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif !important;
+}
+
+.button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+    background: linear-gradient(180deg, #ffffff, #dcdcdc) !important;
+}
+
+.button:active, input[type="button"]:active, input[type="submit"]:active {
+    border-color: var(--window-dark) var(--window-light) var(--window-light) var(--window-dark) !important;
+    background: linear-gradient(180deg, #e8e8e8, #d0d0d0) !important;
+}
+
+/* Forms */
+.form-row {
+    background: transparent !important;
+    padding: 10px !important;
+    border-bottom: 1px solid #ddd !important;
+}
+
+.form-row:hover {
+    background: #f5f5f5 !important;
+}
+
+.fieldBox {
+    border: 1px solid var(--window-dark) !important;
+    background: var(--window-face) !important;
+    padding: 8px !important;
+}
+
+label {
+    color: var(--ink) !important;
+    font-weight: normal !important;
+}
+
+input[type="text"], 
+input[type="password"], 
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+    background: var(--window-light) !important;
+    border: 2px solid !important;
+    border-color: var(--window-dark) var(--window-light) var(--window-light) var(--window-dark) !important;
+    color: var(--ink) !important;
+    padding: 4px !important;
+    font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif !important;
+}
+
+/* Fieldsets */
+fieldset {
+    border: 2px solid !important;
+    border-color: var(--window-light) var(--window-dark) var(--window-dark) var(--window-light) !important;
+    background: var(--window-face) !important;
+    margin: 10px 0 !important;
+    padding: 10px !important;
+}
+
+legend {
+    background: var(--window-face) !important;
+    color: var(--ink) !important;
+    padding: 0 4px !important;
+}
+
+/* Sidebar */
+#sidebar {
+    background: var(--window-face) !important;
+}
+
+.module.filtered {
+    border-color: var(--titlebar) !important;
+}
+
+/* Messages */
+.messagelist li {
+    border: 1px solid var(--window-dark) !important;
+    background: #e8e8e8 !important;
+    padding: 10px !important;
+    margin: 5px 0 !important;
+}
+
+/* Delete link */
+.deletelink {
+    color: #800000 !important;
+}
+
+/* Help text */
+.help {
+    background: #fffacd !important;
+    border: 1px solid #ddd !important;
+    color: #666 !important;
+    padding: 5px !important;
+    font-size: 11px !important;
+}
+
+/* Pagination */
+.paginator {
+    background: var(--window-face) !important;
+    padding: 10px !important;
+}
+
+.paginator a, .paginator span {
+    display: inline-block;
+    padding: 4px 8px !important;
+    margin: 2px !important;
+    border: 1px solid var(--window-dark) !important;
+    background: linear-gradient(180deg, #f7f7f7, #d6d6d6) !important;
+}
+
+.paginator .this-page {
+    background: var(--titlebar) !important;
+    color: var(--titlebar-text) !important;
+}
+
+/* Quiet style */
+.quiet {
+    color: #666 !important;
+}
+
+/* Submit row */
+.submit-row {
+    background: var(--window-face) !important;
+    border-top: 1px solid var(--window-dark) !important;
+    padding: 10px !important;
+}

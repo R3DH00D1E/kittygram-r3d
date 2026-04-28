@@ -3,8 +3,9 @@ from .models import Cat
 
 @admin.register(Cat)
 class CatAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'color', 'birth_year')
+    list_display = ('id', 'name', 'color', 'birth_year', 'owner', 'ownership_status')
     search_fields = ('name',)
+    list_filter = ('color', 'birth_year', 'ownership_status')
 
 from django.contrib.auth import get_user_model
 from .models import Achievement, OwnershipStatus

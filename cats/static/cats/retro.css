@@ -39,11 +39,10 @@ body::before {
     pointer-events: none;
     display: block;
     background-image:
-        linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px),
-        linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
-    background-size: 56px 56px, 56px 56px;
-    background-position: 0 0, 28px 28px;
-    opacity: 0.18;
+        linear-gradient(90deg, rgba(128,128,128,0.3) 1px, transparent 1px),
+        linear-gradient(rgba(128,128,128,0.3) 1px, transparent 1px);
+    background-size: 16px 16px, 16px 16px;
+    background-position: 0 0, 8px 8px;
     z-index: 0;
 }
 
