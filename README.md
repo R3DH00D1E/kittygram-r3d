@@ -3,6 +3,7 @@
 Kittygram - учебный REST API на Django REST Framework для управления котиками и их достижениями.
 
 Проект поддерживает:
+
 - регистрацию пользователей;
 - JWT-аутентификацию;
 - CRUD-операции для котов;
@@ -28,7 +29,7 @@ Kittygram - учебный REST API на Django REST Framework для управ
 1. Клонируйте репозиторий и перейдите в директорию проекта:
 
 ```bash
-git clone <url-вашего-репозитория>
+git clone github.com/R3DH00D1E/kittygram-r3d
 cd kittygram-r3d
 ```
 
@@ -58,7 +59,30 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-API доступно по адресу: http://127.0.0.1:8000/
+Проект можно открыть и на Mac с Apple Silicon (M-чипы на архитектуре ARM64), и на Linux AMD64/ARM64.
+
+Для этого не нужны специальные команды: Docker-образ собирается для обеих платформ, а зависимости ставятся из `requirements.txt`.
+
+### Если запускать через Docker
+
+```bash
+docker compose -f docker-compose.server.yml --env-file .env up -d
+```
+
+После запуска сайт должен открываться по адресу `http://127.0.0.1/` или по адресу сервера, если это удалённая машина.
+
+### Если запускать без Docker
+
+```bash
+python3 -m venv env
+source env/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+Важно: сначала должен успешно установиться `Pillow`, потому что в проекте используется загрузка изображений котов.
 
 ## Основные эндпоинты
 
@@ -119,6 +143,7 @@ API доступно по адресу: http://127.0.0.1:8000/
 ## Docker
 
 В проекте используются файлы:
+
 - `Dockerfile`
 - `docker-entrypoint.sh`
 - `docker-compose.server.yml`
@@ -135,17 +160,19 @@ docker run --rm -p 80:80 \
   kittygram:local
 ```
 
-После запуска API будет доступно на http://127.0.0.1/
+После запуска сайт будет доступен на http://127.0.0.1/
 
 ## CI/CD через GitHub Actions
 
 Workflow: `.github/workflows/deploy.yml`
 
 Когда запускается:
-- автоматически на `push` в `master`;
+
+- автоматический `push` в `master`;
 - вручную через `workflow_dispatch`.
 
 Что делает pipeline:
+
 1. Собирает Docker-образ.
 2. Пушит образ в GHCR (`ghcr.io/<owner>/kittygram:latest`).
 3. Подключается к серверу по SSH.
@@ -161,7 +188,7 @@ Workflow: `.github/workflows/deploy.yml`
 - `SSH_PORT` - SSH порт (например `22`)
 - `SSH_USER` - пользователь сервера
 - `SSH_PRIVATE_KEY` - приватный SSH-ключ для деплоя
-- `SERVER_APP_DIR` - папка приложения на сервере (например `/opt/kittygram`)
+- `SERVER_APP_DIR` - папка приложения на сервере
 - `DJANGO_SECRET_KEY` - продовый SECRET_KEY
 - `DJANGO_ALLOWED_HOSTS` - хосты через запятую (например `example.com,1.2.3.4`)
 - `GHCR_USERNAME` - GitHub username
@@ -170,6 +197,7 @@ Workflow: `.github/workflows/deploy.yml`
 ## Подготовка Ubuntu-сервера
 
 Минимально на сервере должны быть:
+
 - Docker;
 - Docker Compose plugin (`docker compose`);
 - пользователь с доступом к Docker;
@@ -188,13 +216,14 @@ docker ps
 После успешного workflow:
 
 ```bash
-cd /opt/kittygram
+cd /директория/вашего/сайта/kittygram
 
 docker compose -f docker-compose.server.yml --env-file .env ps
 ```
 
 Приложение должно открываться по адресу:
-- `http://<ваш-server-ip>/`
+
+- `http://<ваш-ip>/`
 
 Если контейнер запущен через `docker compose` с `restart: unless-stopped`, то после перезагрузки сервера Docker поднимет его автоматически, когда сам сервис Docker стартует вместе с системой.
 
