@@ -9,9 +9,11 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Achievement, Cat, User
+from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
 
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 class IsOwnerOrAdmin:
@@ -159,6 +161,61 @@ def admin_dashboard(request):
         'featured_cats': featured_cats,
     }
     return render(request, 'cats/admin_dashboard.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
+@require_http_methods(["DELETE"])
+def api_delete_cat(request, cat_id):
+    """AJAX API: delete a cat."""
+    try:
+        cat = Cat.objects.get(id=cat_id)
+        cat_name = cat.name
+        cat.delete()
+        return JsonResponse({'success': True, 'message': f'Кот "{cat_name}" удалён'})
+    except Cat.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Кот не найден'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
+@require_http_methods(["POST", "OPTIONS"])
+def api_update_cat_status(request, cat_id):
+    """AJAX API: update cat ownership status."""
+    if request.method == 'OPTIONS':
+        return JsonResponse({'success': True})
+    
+    try:
+        cat = Cat.objects.get(id=cat_id)
+        status_id = request.POST.get('status_id')
+        
+        if status_id:
+            ownership_status = OwnershipStatus.objects.get(id=status_id)
+            cat.ownership_status = ownership_status
+            cat.save()
+            return JsonResponse({'success': True, 'message': f'Статус обновлён на "{ownership_status.name}"'})
+        else:
+            return JsonResponse({'success': False, 'error': 'Статус не указан'}, status=400)
+    except Cat.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Кот не найден'}, status=404)
+    except OwnershipStatus.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Статус не найден'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
+@require_http_methods(["GET"])
+def api_list_ownership_statuses(request):
+    """AJAX API: list all ownership statuses."""
+    try:
+        statuses = OwnershipStatus.objects.values('id', 'name')
+        return JsonResponse({'success': True, 'statuses': list(statuses)})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @login_required(login_url='login')

@@ -26,6 +26,8 @@ class Cat(models.Model):
     owner = models.ForeignKey(
         User, related_name='cats', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='cats/', null=True, blank=True)
+    ownership_status = models.ForeignKey(
+        'OwnershipStatus', null=True, blank=True, on_delete=models.SET_NULL, related_name='cats')
     achievements = models.ManyToManyField(Achievement, through='AchievementCat')
 
     def __str__(self):
@@ -38,3 +40,12 @@ class AchievementCat(models.Model):
 
     def __str__(self):
         return f'{self.achievement} {self.cat}'
+
+
+class OwnershipStatus(models.Model):
+    """Статусы владения котом (например: 'Владеет', 'В приюте', 'В поиске')."""
+    name = models.CharField(max_length=64, unique=True)
+    description = models.TextField(blank=True, default='')
+
+    def __str__(self):
+        return self.name

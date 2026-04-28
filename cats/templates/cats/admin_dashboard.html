@@ -176,19 +176,19 @@
             <div class="panel admin-card">
                 <h3>Всего котов</h3>
                 <div class="admin-stat">{{ cat_count }}</div>
-                <a href="#cats" class="button button-alt">Управление</a>
+                <a href="/admin/cats/cat/" class="button button-alt">Управление</a>
             </div>
 
             <div class="panel admin-card">
                 <h3>Пользователей</h3>
                 <div class="admin-stat">{{ user_count }}</div>
-                <a href="#users" class="button button-alt">Управление</a>
+                <a href="/admin/auth/user/" class="button button-alt">Управление</a>
             </div>
 
             <div class="panel admin-card">
                 <h3>Достижений</h3>
                 <div class="admin-stat">{{ achievement_count }}</div>
-                <a href="#achievements" class="button button-alt">Управление</a>
+                <a href="/admin/cats/achievement/" class="button button-alt">Управление</a>
             </div>
         </div>
 
@@ -202,23 +202,50 @@
                             <th>Цвет</th>
                             <th>Владелец</th>
                             <th>Год рождения</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for cat in featured_cats %}
-                            <tr>
-                                <td>{{ cat.name }}</td>
+                            <tr id="cat-row-{{ cat.id }}">
+                                <td><a href="/admin/cats/cat/{{ cat.id }}/change/">{{ cat.name }}</a></td>
                                 <td>{{ cat.get_color_display }}</td>
                                 <td>{{ cat.owner.username }}</td>
                                 <td>{{ cat.birth_year }}</td>
+                                <td id="status-{{ cat.id }}">{{ cat.ownership_status.name|default:"—" }}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="openStatusModal({{ cat.id }}, '{{ cat.name }}')">Статус</button>
+                                    <button class="admin-btn admin-btn-danger" onclick="deleteCat({{ cat.id }}, '{{ cat.name }}')">Удалить</button>
+                                </td>
                             </tr>
                         {% empty %}
-                            <tr><td colspan="4" style="text-align: center; font-style: italic;">Коты не найдены</td></tr>
+                            <tr><td colspan="6" style="text-align: center; font-style: italic;">Коты не найдены</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </section>
+
+        <!-- Modal for status change -->
+        <div id="statusModal" class="modal-overlay" style="display: none;">
+            <div class="modal-window panel">
+                <div class="modal-header">
+                    <h3>Изменить статус кота: <span id="modalCatName"></span></h3>
+                </div>
+                <div class="modal-body">
+                    <label>Выберите статус:
+                        <select id="statusSelect" class="modal-select">
+                            <option value="">— Выберите —</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button class="button" onclick="confirmStatusChange()">Установить</button>
+                    <button class="button button-alt" onclick="closeStatusModal()">Отмена</button>
+                </div>
+            </div>
+        </div>
 
         <section class="panel footer">
             <div>
@@ -229,5 +256,199 @@
     </div>
 
     <a href="{% url 'home' %}?debug=0" class="debug-toggle">Back to Retro</a>
-</body>
-</html>
+
+    <script>
+        let currentCatId = null;
+
+        function openStatusModal(catId, catName) {
+            currentCatId = catId;
+            document.getElementById('modalCatName').textContent = catName;
+            document.getElementById('statusModal').style.display = 'flex';
+            loadOwnershipStatuses();
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').style.display = 'none';
+            currentCatId = null;
+        }
+
+        function loadOwnershipStatuses() {
+            fetch('/api/ownership-statuses/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('statusSelect');
+                        select.innerHTML = '<option value="">— Выберите —</option>';
+                        data.statuses.forEach(status => {
+                            const option = document.createElement('option');
+                            option.value = status.id;
+                            option.textContent = status.name;
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => alert('Ошибка при загрузке статусов: ' + err));
+        }
+
+        function confirmStatusChange() {
+            const statusId = document.getElementById('statusSelect').value;
+            if (!statusId) {
+                alert('Выберите статус');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('status_id', statusId);
+
+            fetch(`/api/cat/${currentCatId}/status/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update status display
+                    const statusCell = document.getElementById(`status-${currentCatId}`);
+                    const selectedOption = document.getElementById('statusSelect').options[document.getElementById('statusSelect').selectedIndex];
+                    statusCell.textContent = selectedOption.textContent;
+                    alert(data.message);
+                    closeStatusModal();
+                } else {
+                    alert('Ошибка: ' + data.error);
+                }
+            })
+            .catch(err => alert('Ошибка при обновлении статуса: ' + err));
+        }
+
+        function deleteCat(catId, catName) {
+            if (confirm(`Вы уверены, что хотите удалить кота "${catName}"?`)) {
+                fetch(`/api/cat/${catId}/delete/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`cat-row-${catId}`).remove();
+                        alert(data.message);
+                    } else {
+                        alert('Ошибка: ' + data.error);
+                    }
+                })
+                .catch(err => alert('Ошибка при удалении: ' + err));
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Close modal on outside click
+        document.getElementById('statusModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStatusModal();
+            }
+        });
+    </script>
+
+    <style>
+        .admin-btn {
+            padding: 6px 10px;
+            margin: 2px;
+            border: 1px solid var(--window-shadow);
+            background: linear-gradient(180deg, #f7f7f7, #d6d6d6);
+            color: var(--ink);
+            cursor: pointer;
+            font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            box-shadow: inset 1px 1px 0 var(--window-light), inset -1px -1px 0 var(--window-dark);
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(180deg, #ffffff, #dcdcdc);
+        }
+
+        .admin-btn-danger {
+            color: #c00000;
+        }
+
+        .admin-btn-danger:hover {
+            background: linear-gradient(180deg, #ffdddd, #ffbbbb);
+        }
+
+        .modal-overlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-window {
+            min-width: 320px;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header h3 {
+            margin: 0 0 16px 0;
+            display: inline-flex;
+            align-items: center;
+            min-height: 26px;
+            padding: 0 8px;
+            background: linear-gradient(180deg, var(--titlebar-active), var(--titlebar));
+            color: var(--title-text);
+            border: 1px solid #000000;
+            box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000;
+        }
+
+        .modal-body {
+            margin: 16px 0;
+            padding: 12px;
+        }
+
+        .modal-select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--window-shadow);
+            background: var(--window-face);
+            font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
+            margin-top: 8px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .modal-footer .button {
+            flex: 0;
+            padding: 8px 16px;
+        }
+    </style>
+

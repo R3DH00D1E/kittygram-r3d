@@ -37,8 +37,17 @@ body::before {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    display: none;
+    display: block;
+    background-image:
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
+    background-position: 0 0, 28px 28px;
+    opacity: 0.18;
+    z-index: 0;
 }
+
+.page-shell { position: relative; z-index: 1; }
 
 a {
     color: var(--accent);

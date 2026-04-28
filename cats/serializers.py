@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 import datetime as dt
 
-from .models import CHOICES, Achievement, Cat, User
+from .models import CHOICES, Achievement, Cat, User, OwnershipStatus
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,6 +20,12 @@ class AchievementSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
+class OwnershipStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OwnershipStatus
+        fields = ('id', 'name', 'description')
+
+
 class CatSerializer(serializers.ModelSerializer):
     achievements = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -27,13 +33,14 @@ class CatSerializer(serializers.ModelSerializer):
         required=False
     )
     image = serializers.ImageField(required=False, allow_null=True)
+    ownership_status = serializers.PrimaryKeyRelatedField(queryset=OwnershipStatus.objects.all(), required=False, allow_null=True)
     color = serializers.ChoiceField(choices=CHOICES)
     age = serializers.SerializerMethodField()
 
     class Meta:
         model = Cat
         fields = ('id', 'name', 'color', 'birth_year', 'achievements', 'owner',
-                  'image', 'age')
+                  'ownership_status', 'image', 'age')
         read_only_fields = ('owner',)
 
     def get_age(self, obj):
