@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kittygram - клуб котов</title>
+    <link rel="stylesheet" href="{% static 'cats/retro.css' %}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar panel">
+            <div>
+                <p class="kicker">personal cat homepage since 2001</p>
+                <h1>Kittygram</h1>
+                <p class="subtitle">Личная страница кошачьего клуба в духе старого доброго интернета.</p>
+            </div>
+            <div class="status-box">
+                <div><span>{{ cat_count }}</span><small>cats online</small></div>
+                <div><span>{{ user_count }}</span><small>owners</small></div>
+                <div><span>{{ achievement_count }}</span><small>achievements</small></div>
+            </div>
+        </header>
+
+        <nav class="menu panel" aria-label="Основное меню">
+            <a href="#featured">Коты дня</a>
+            <a href="#news">Новости</a>
+            <a href="#gallery">Галерея</a>
+            <a href="#achievements">Достижения</a>
+            <a href="/admin/">Вход для администратора</a>
+        </nav>
+
+        <main class="layout">
+            <section class="hero panel">
+                <div class="hero-copy">
+                    <p class="flash">WELCOME TO THE CAT ZONE</p>
+                    <h2>Кошачий сайт, который выглядит так, будто его делали на домашнем компьютере в 2003 году.</h2>
+                    <p>Табличная эстетика, рамки, кнопки, витрина питомцев и никаких лишних сложностей. Всё важное видно сразу.</p>
+                    <div class="hero-links">
+                        <a class="button" href="#featured">Смотреть котов</a>
+                        <a class="button button-alt" href="#news">Читать новости</a>
+                    </div>
+                </div>
+                <aside class="visitor-card">
+                    <p>Guestbook</p>
+                    <strong>Sign the page!</strong>
+                    <span>Оставьте след на странице, как в старых домашних сайтах.</span>
+                </aside>
+            </section>
+
+            <section class="content-grid">
+                <article class="panel sidebar" id="news">
+                    <h3>Новости питомника</h3>
+                    <ul class="news-list">
+                        <li>Добавлены новые карточки котов в стиле архивного каталога.</li>
+                        <li>Ретро-оформление работает без тяжелого JS и без модальных окон.</li>
+                        <li>Страница адаптируется под мобильные экраны, но сохраняет старую эстетику.</li>
+                    </ul>
+                </article>
+
+                <section class="panel featured" id="featured">
+                    <div class="section-head">
+                        <h3>Коты дня</h3>
+                        <span>fresh from the server</span>
+                    </div>
+                    <div class="cat-grid">
+                        {% for cat in featured_cats %}
+                            <article class="cat-card">
+                                <div class="cat-photo">
+                                    <span>{{ cat.name|first|upper }}</span>
+                                </div>
+                                <div class="cat-meta">
+                                    <h4>{{ cat.name }}</h4>
+                                    <p>{{ cat.get_color_display }} · {{ cat.birth_year }} г.р.</p>
+                                    <p>Владелец: {{ cat.owner.username }}</p>
+                                    <p>Достижений: {{ cat.achievement_count }}</p>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <p class="empty-state">Пока здесь пусто, но как только появятся коты, они займут эту витрину.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <aside class="panel sidebar" id="achievements">
+                    <h3>Достижения</h3>
+                    <div class="badge-list">
+                        {% for achievement in latest_achievements %}
+                            <span class="badge">{{ achievement.name }}</span>
+                        {% empty %}
+                            <p class="empty-state">Достижения появятся здесь после первой публикации котов.</p>
+                        {% endfor %}
+                    </div>
+                </aside>
+            </section>
+
+            <section class="panel gallery" id="gallery">
+                <div class="section-head">
+                    <h3>Галерея</h3>
+                    <span>retro photo wall</span>
+                </div>
+                <div class="gallery-strip">
+                    <div class="snapshot">CAT PIC 01</div>
+                    <div class="snapshot snapshot-alt">CAT PIC 02</div>
+                    <div class="snapshot">CAT PIC 03</div>
+                    <div class="snapshot snapshot-alt">CAT PIC 04</div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer panel">
+            <div>
+                <strong>Kittygram</strong>
+                <p>Сделано в духе старых сайтов 90-х - 2000-х, но без боли для пользователя.</p>
+            </div>
+            <p><a href="/cats/">API cats</a> · <a href="/auth/users/">API users</a> · <a href="/achievements/">API achievements</a></p>
+        </footer>
+    </div>
+</body>
+</html>
