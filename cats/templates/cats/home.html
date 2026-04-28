@@ -108,7 +108,11 @@
                         {% for cat in featured_cats %}
                             <article class="cat-card">
                                 <div class="cat-photo">
-                                    <span>{{ cat.name|first|upper }}</span>
+                                    {% if cat.image %}
+                                        <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <span>{{ cat.name|first|upper }}</span>
+                                    {% endif %}
                                 </div>
                                 <div class="cat-meta">
                                     <h4>{{ cat.name }}</h4>
