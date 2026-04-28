@@ -1,7 +1,7 @@
 :root {
     color-scheme: light;
     --desktop: #c0c0c0;
-    --window-face: #d4d0c8;
+    --window-face: #c0c0c0;
     --window-dark: #808080;
     --window-light: #ffffff;
     --window-shadow: #000000;
@@ -12,8 +12,8 @@
     --accent: #000080;
     --accent-2: #800000;
     --chrome: #b5b5b5;
-    --shadow: rgba(0, 0, 0, 0.18);
-    --glow: rgba(255, 255, 255, 0.75);
+    --shadow: #808080;
+    --glow: #ffffff;
 }
 
 * {
@@ -37,12 +37,7 @@ body::before {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%) -8px 0 / 16px 16px,
-        linear-gradient(225deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%) -8px 0 / 16px 16px,
-        linear-gradient(315deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0 / 16px 16px,
-        linear-gradient(45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%) 0 0 / 16px 16px;
-    opacity: 0.8;
+    display: none;
 }
 
 a {
@@ -60,7 +55,7 @@ a {
     box-shadow:
         inset 1px 1px 0 var(--window-light),
         inset -1px -1px 0 var(--window-dark),
-        2px 2px 0 rgba(0, 0, 0, 0.18);
+        2px 2px 0 #808080;
 }
 
 .topbar,
@@ -216,8 +211,8 @@ h1 {
     padding: 4px 8px;
     border: 1px solid #000000;
     box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.45),
-        inset -1px -1px 0 rgba(0,0,0,0.35);
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #000000;
     animation: blink 1.3s steps(2, end) infinite;
 }
 
@@ -296,8 +291,8 @@ h1 {
     color: var(--title-text);
     border: 1px solid #000000;
     box-shadow:
-        inset 1px 1px 0 rgba(255,255,255,0.45),
-        inset -1px -1px 0 rgba(0,0,0,0.35);
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #000000;
 }
 
 .news-list {
