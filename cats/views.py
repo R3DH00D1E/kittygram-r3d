@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
+import os
+from django.conf import settings
 
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
 from django.http import JsonResponse
@@ -318,3 +320,39 @@ def home_page(request):
         'user': request.user,
     }
     return render(request, 'cats/home.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_staff or settings.DEBUG)
+def debug_media_check(request):
+    """Debug helper: check that a cat image exists on disk and show its URL/path.
+
+    Usage: /debug/media-check/?cat_id=123
+    Only accessible to staff users or when DEBUG=True.
+    """
+    cat_id = request.GET.get('cat_id')
+    if not cat_id:
+        return JsonResponse({'success': False, 'error': 'cat_id required'}, status=400)
+
+    try:
+        cat = Cat.objects.get(id=cat_id)
+    except Cat.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'cat not found'}, status=404)
+
+    if not cat.image:
+        return JsonResponse({'success': True, 'has_image': False, 'message': 'Cat has no image'})
+
+    # image.url and image.path may raise ValueError if storage is remote; handle safely
+    image_url = getattr(cat.image, 'url', None)
+    image_path = getattr(cat.image, 'path', None)
+    exists = False
+    if image_path:
+        exists = os.path.exists(image_path)
+
+    return JsonResponse({
+        'success': True,
+        'has_image': True,
+        'url': image_url,
+        'path': image_path,
+        'exists_on_disk': exists,
+    })
