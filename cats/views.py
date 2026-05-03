@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
+from django.utils import timezone
 import os
 from django.conf import settings
 
@@ -87,7 +88,6 @@ def login_view(request):
             context = {'error': 'Неверное имя пользователя или пароль'}
             return render(request, 'cats/login.html', context)
     
-    # Check debug parameter
     debug_mode = request.GET.get('debug')
     if debug_mode == '1':
         request.session['debug_mode'] = True
@@ -105,31 +105,44 @@ def register_view(request):
         password2 = request.POST.get('password2')
         email = request.POST.get('email', '')
         
-        # Validate passwords match
+
         if password1 != password2:
             context = {'error': 'Пароли не совпадают'}
             return render(request, 'cats/register.html', context)
         
-        # Check if user already exists
         if DjangoUser.objects.filter(username=username).exists():
             context = {'error': 'Пользователь с таким именем уже существует'}
             return render(request, 'cats/register.html', context)
         
-        # Create user
         try:
             user = DjangoUser.objects.create_user(
                 username=username,
                 password=password1,
                 email=email
             )
-            # Log the user in
+
+            consent_personal = bool(request.POST.get('consent_personal'))
+            consent_photo = bool(request.POST.get('consent_photo'))
+            try:
+                profile = user.profile
+            except Exception:
+                profile = None
+            if profile:
+                profile.consent_personal = consent_personal
+                profile.consent_photo = consent_photo
+                now = timezone.now()
+                if consent_personal:
+                    profile.consent_personal_date = now
+                if consent_photo:
+                    profile.consent_photo_date = now
+                profile.save()
+
             login(request, user)
             return redirect('cabinet')
         except Exception as e:
             context = {'error': f'Ошибка при регистрации: {str(e)}'}
             return render(request, 'cats/register.html', context)
-    
-    # Check debug parameter
+
     debug_mode = request.GET.get('debug')
     if debug_mode == '1':
         request.session['debug_mode'] = True
@@ -171,8 +184,8 @@ def _get_cabinet_context(user, error_message=''):
         'user_cats': user_cats,
         'admin_cats': admin_cats,
         'admin_users': admin_users,
-            'all_achievements': all_achievements,
-            'all_statuses': all_statuses,
+        'all_achievements': all_achievements,
+        'all_statuses': all_statuses,
         'choices': CHOICES,
         'ownership_statuses': OwnershipStatus.objects.order_by('name'),
         'error_message': error_message,
@@ -196,6 +209,15 @@ def cabinet_view(request):
 
             if not name or not color or not birth_year:
                 error_message = 'Заполните имя, цвет и год рождения.'
+            else:
+                if image and not getattr(request.user, 'profile', None):
+                    error_message = 'Нужен профиль пользователя для загрузки фото.'
+                if image and getattr(request.user, 'profile', None) and not request.user.profile.consent_photo:
+                    error_message = 'Для загрузки фотографии нужно подтвердить согласие на публикацию фото в профиле.'
+            
+            if error_message:
+                context = _get_cabinet_context(request.user, error_message)
+                return render(request, 'cats/cabinet.html', context)
             else:
                 ownership_status = None
                 if status_id:
@@ -260,13 +282,11 @@ def cabinet_view(request):
             user_id = request.POST.get('user_id')
             target_user = get_object_or_404(DjangoUser, id=user_id)
             
-            # Prevent deleting yourself
             if target_user.id == request.user.id:
                 error_message = 'Нельзя удалить самого себя.'
                 context = _get_cabinet_context(request.user, error_message)
                 return render(request, 'cats/cabinet.html', context)
             
-            # Prevent staff from deleting superuser (but superuser can delete anyone)
             if target_user.is_superuser and not request.user.is_superuser:
                 error_message = 'Только суперпользователь может удалить другого суперпользователя.'
                 context = _get_cabinet_context(request.user, error_message)
@@ -286,6 +306,16 @@ def cabinet_view(request):
             else:
                 error_message = 'Введите название достижения.'
 
+        elif action == 'update_achievement' and (request.user.is_staff or request.user.is_superuser):
+            achievement = get_object_or_404(Achievement, id=request.POST.get('achievement_id'))
+            achievement_name = (request.POST.get('achievement_name') or '').strip()
+            if achievement_name:
+                achievement.name = achievement_name
+                achievement.save()
+                return redirect('cabinet')
+            else:
+                error_message = 'Введите название достижения.'
+
         elif action == 'delete_achievement' and (request.user.is_staff or request.user.is_superuser):
             achievement = get_object_or_404(Achievement, id=request.POST.get('achievement_id'))
             achievement.delete()
@@ -296,6 +326,18 @@ def cabinet_view(request):
             status_desc = (request.POST.get('status_desc') or '').strip()
             if status_name:
                 OwnershipStatus.objects.get_or_create(name=status_name, defaults={'description': status_desc})
+                return redirect('cabinet')
+            else:
+                error_message = 'Введите название статуса.'
+
+        elif action == 'update_status' and (request.user.is_staff or request.user.is_superuser):
+            status_obj = get_object_or_404(OwnershipStatus, id=request.POST.get('status_id'))
+            status_name = (request.POST.get('status_name') or '').strip()
+            status_desc = (request.POST.get('status_desc') or '').strip()
+            if status_name:
+                status_obj.name = status_name
+                status_obj.description = status_desc
+                status_obj.save()
                 return redirect('cabinet')
             else:
                 error_message = 'Введите название статуса.'
@@ -407,7 +449,6 @@ def home_page(request):
         .order_by('-id')[:6]
     )
     
-    # Get random cats for gallery (only those with images, max 4)
     import random
     all_cats_with_images = list(Cat.objects.select_related('owner').exclude(image=''))
     gallery_cats = random.sample(all_cats_with_images, min(4, len(all_cats_with_images))) if all_cats_with_images else []
@@ -416,7 +457,6 @@ def home_page(request):
         cat_count=Count('cat')
     ).order_by('-id')[:8]
 
-    # Check debug parameter for debug menu
     debug_mode = request.GET.get('debug')
     if debug_mode == '1':
         request.session['debug_mode'] = True
@@ -456,7 +496,6 @@ def debug_media_check(request):
     if not cat.image:
         return JsonResponse({'success': True, 'has_image': False, 'message': 'Cat has no image'})
 
-    # image.url and image.path may raise ValueError if storage is remote; handle safely
     image_url = getattr(cat.image, 'url', None)
     image_path = getattr(cat.image, 'path', None)
     exists = False

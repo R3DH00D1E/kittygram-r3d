@@ -1,4 +1,3 @@
-/* Retro Windows 3.1-95 theme for Django Admin */
 :root {
     --desktop: #c0c0c0;
     --window-face: #c0c0c0;
@@ -10,7 +9,6 @@
     --ink: #000000;
 }
 
-/* Background with retro square pattern */
 body {
     background: var(--desktop) !important;
     background-image:
@@ -22,7 +20,6 @@ body {
     font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif !important;
 }
 
-/* Admin header */
 #header {
     background: linear-gradient(90deg, var(--titlebar) 0%, #0000c0 100%) !important;
     border-bottom: 2px solid var(--window-dark) !important;
@@ -33,13 +30,11 @@ body {
     color: var(--titlebar-text) !important;
 }
 
-/* Logo/branding */
 #branding h1 {
     color: var(--titlebar-text) !important;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.5) !important;
 }
 
-/* Navigation */
 #user-tools {
     background: var(--window-face) !important;
     border-bottom: 1px solid var(--window-dark) !important;
@@ -51,7 +46,6 @@ body {
     font-weight: bold;
 }
 
-/* Main content */
 #main {
     background: transparent !important;
 }
@@ -64,7 +58,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Tables */
 .results table {
     background: var(--window-face) !important;
 }
@@ -97,7 +90,6 @@ body {
     border-right: none !important;
 }
 
-/* Links */
 a {
     color: var(--titlebar) !important;
 }
@@ -106,7 +98,6 @@ a:hover {
     color: #800000 !important;
 }
 
-/* Buttons */
 .button, input[type="button"], input[type="submit"] {
     background: linear-gradient(180deg, #f7f7f7, #d6d6d6) !important;
     border: 2px solid !important;
@@ -126,7 +117,6 @@ a:hover {
     background: linear-gradient(180deg, #e8e8e8, #d0d0d0) !important;
 }
 
-/* Forms */
 .form-row {
     background: transparent !important;
     padding: 10px !important;
@@ -162,7 +152,6 @@ select {
     font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif !important;
 }
 
-/* Fieldsets */
 fieldset {
     border: 2px solid !important;
     border-color: var(--window-light) var(--window-dark) var(--window-dark) var(--window-light) !important;
@@ -177,7 +166,6 @@ legend {
     padding: 0 4px !important;
 }
 
-/* Sidebar */
 #sidebar {
     background: var(--window-face) !important;
 }
@@ -186,7 +174,6 @@ legend {
     border-color: var(--titlebar) !important;
 }
 
-/* Messages */
 .messagelist li {
     border: 1px solid var(--window-dark) !important;
     background: #e8e8e8 !important;
@@ -194,12 +181,10 @@ legend {
     margin: 5px 0 !important;
 }
 
-/* Delete link */
 .deletelink {
     color: #800000 !important;
 }
 
-/* Help text */
 .help {
     background: #fffacd !important;
     border: 1px solid #ddd !important;
@@ -208,7 +193,6 @@ legend {
     font-size: 11px !important;
 }
 
-/* Pagination */
 .paginator {
     background: var(--window-face) !important;
     padding: 10px !important;
@@ -227,12 +211,10 @@ legend {
     color: var(--titlebar-text) !important;
 }
 
-/* Quiet style */
 .quiet {
     color: #666 !important;
 }
 
-/* Submit row */
 .submit-row {
     background: var(--window-face) !important;
     border-top: 1px solid var(--window-dark) !important;

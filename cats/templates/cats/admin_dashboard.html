@@ -227,7 +227,7 @@
             </div>
         </section>
 
-        <!-- Modal for status change -->
+        
         <div id="statusModal" class="modal-overlay" style="display: none;">
             <div class="modal-window panel">
                 <div class="modal-header">
@@ -310,7 +310,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update status display
+                    
                     const statusCell = document.getElementById(`status-${currentCatId}`);
                     const selectedOption = document.getElementById('statusSelect').options[document.getElementById('statusSelect').selectedIndex];
                     statusCell.textContent = selectedOption.textContent;
@@ -359,7 +359,6 @@
             return cookieValue;
         }
 
-        // Close modal on outside click
         document.getElementById('statusModal')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeStatusModal();

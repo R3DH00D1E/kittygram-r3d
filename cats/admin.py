@@ -22,7 +22,6 @@ class OwnershipStatusAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
 
-# Register user model in admin if not already registered via project
 try:
     admin.site.register(User)
 except admin.sites.AlreadyRegistered:
