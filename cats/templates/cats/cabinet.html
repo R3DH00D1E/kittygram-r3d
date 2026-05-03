@@ -531,6 +531,14 @@
                                                     <button type="submit" class="button">Сохранить</button>
                                                 </div>
                                             </form>
+                                            {% if profile.id != user.id %}
+                                                <form method="post" style="display: inline; margin-top: 4px;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="delete_user">
+                                                    <input type="hidden" name="user_id" value="{{ profile.id }}">
+                                                    <button type="submit" class="button button-alt" onclick="return confirm('Удалить пользователя {{ profile.username }}?')">Удалить</button>
+                                                </form>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}

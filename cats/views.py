@@ -249,6 +249,28 @@ def cabinet_view(request):
             target_user.save()
             return redirect('cabinet')
 
+        elif action == 'delete_user' and (request.user.is_staff or request.user.is_superuser):
+            user_id = request.POST.get('user_id')
+            target_user = get_object_or_404(DjangoUser, id=user_id)
+            
+            # Prevent deleting yourself
+            if target_user.id == request.user.id:
+                error_message = 'Нельзя удалить самого себя.'
+                context = _get_cabinet_context(request.user, error_message)
+                return render(request, 'cats/cabinet.html', context)
+            
+            # Prevent staff from deleting superuser (but superuser can delete anyone)
+            if target_user.is_superuser and not request.user.is_superuser:
+                error_message = 'Только суперпользователь может удалить другого суперпользователя.'
+                context = _get_cabinet_context(request.user, error_message)
+                return render(request, 'cats/cabinet.html', context)
+            
+            username = target_user.username
+            target_user.delete()
+            message = f'Пользователь "{username}" удалён.'
+            context = _get_cabinet_context(request.user, message)
+            return render(request, 'cats/cabinet.html', context)
+
     context = _get_cabinet_context(request.user, error_message)
     return render(request, 'cats/cabinet.html', context)
 
