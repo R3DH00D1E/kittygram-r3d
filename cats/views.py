@@ -94,8 +94,6 @@ def register_view(request):
         username = request.POST.get('username')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
-        first_name = request.POST.get('first_name', '')
-        last_name = request.POST.get('last_name', '')
         email = request.POST.get('email', '')
         
         # Validate passwords match
@@ -113,11 +111,8 @@ def register_view(request):
             user = DjangoUser.objects.create_user(
                 username=username,
                 password=password1,
-                first_name=first_name,
-                last_name=last_name,
                 email=email
             )
-            
             # Log the user in
             login(request, user)
             return redirect('cabinet')
