@@ -104,8 +104,13 @@ def register_view(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         email = request.POST.get('email', '')
-        
+        consent_personal = bool(request.POST.get('consent_personal'))
+        consent_photo = bool(request.POST.get('consent_photo'))
 
+        if not consent_personal or not consent_photo:
+            context = {'error': 'Вы должны согласиться на обработку данных и публикацию фотографий'}
+            return render(request, 'cats/register.html', context)
+        
         if password1 != password2:
             context = {'error': 'Пароли не совпадают'}
             return render(request, 'cats/register.html', context)
@@ -121,8 +126,6 @@ def register_view(request):
                 email=email
             )
 
-            consent_personal = bool(request.POST.get('consent_personal'))
-            consent_photo = bool(request.POST.get('consent_photo'))
             try:
                 profile = user.profile
             except Exception:
@@ -131,10 +134,8 @@ def register_view(request):
                 profile.consent_personal = consent_personal
                 profile.consent_photo = consent_photo
                 now = timezone.now()
-                if consent_personal:
-                    profile.consent_personal_date = now
-                if consent_photo:
-                    profile.consent_photo_date = now
+                profile.consent_personal_date = now
+                profile.consent_photo_date = now
                 profile.save()
 
             login(request, user)
