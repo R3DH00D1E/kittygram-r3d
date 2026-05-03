@@ -150,6 +150,9 @@ def _get_cabinet_context(user, error_message=''):
 
     admin_cats = None
     admin_users = None
+    all_achievements = None
+    all_statuses = None
+    
     if user.is_staff or user.is_superuser:
         admin_cats = (
             Cat.objects.select_related('owner', 'ownership_status')
@@ -158,6 +161,8 @@ def _get_cabinet_context(user, error_message=''):
             .order_by('-id')
         )
         admin_users = DjangoUser.objects.order_by('id')
+        all_achievements = Achievement.objects.annotate(cat_count=Count('cat')).order_by('name')
+        all_statuses = OwnershipStatus.objects.annotate(cat_count=Count('cats')).order_by('name')
 
     return {
         'cat_count': user_cats.count(),
@@ -166,6 +171,8 @@ def _get_cabinet_context(user, error_message=''):
         'user_cats': user_cats,
         'admin_cats': admin_cats,
         'admin_users': admin_users,
+            'all_achievements': all_achievements,
+            'all_statuses': all_statuses,
         'choices': CHOICES,
         'ownership_statuses': OwnershipStatus.objects.order_by('name'),
         'error_message': error_message,
@@ -271,6 +278,33 @@ def cabinet_view(request):
             context = _get_cabinet_context(request.user, message)
             return render(request, 'cats/cabinet.html', context)
 
+        elif action == 'create_achievement' and (request.user.is_staff or request.user.is_superuser):
+            achievement_name = (request.POST.get('achievement_name') or '').strip()
+            if achievement_name:
+                Achievement.objects.get_or_create(name=achievement_name)
+                return redirect('cabinet')
+            else:
+                error_message = 'Введите название достижения.'
+
+        elif action == 'delete_achievement' and (request.user.is_staff or request.user.is_superuser):
+            achievement = get_object_or_404(Achievement, id=request.POST.get('achievement_id'))
+            achievement.delete()
+            return redirect('cabinet')
+
+        elif action == 'create_status' and (request.user.is_staff or request.user.is_superuser):
+            status_name = (request.POST.get('status_name') or '').strip()
+            status_desc = (request.POST.get('status_desc') or '').strip()
+            if status_name:
+                OwnershipStatus.objects.get_or_create(name=status_name, defaults={'description': status_desc})
+                return redirect('cabinet')
+            else:
+                error_message = 'Введите название статуса.'
+
+        elif action == 'delete_status' and (request.user.is_staff or request.user.is_superuser):
+            status = get_object_or_404(OwnershipStatus, id=request.POST.get('status_id'))
+            status.delete()
+            return redirect('cabinet')
+
     context = _get_cabinet_context(request.user, error_message)
     return render(request, 'cats/cabinet.html', context)
 
@@ -333,6 +367,24 @@ def api_list_ownership_statuses(request):
         return JsonResponse({'success': True, 'statuses': list(statuses)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required(login_url='login')
+@login_required(login_url='login')
+def cats_gallery_view(request):
+    """Page with all cats."""
+    all_cats = (
+        Cat.objects.select_related('owner', 'ownership_status')
+        .prefetch_related('achievements')
+        .annotate(achievement_count=Count('achievements'))
+        .order_by('-id')
+    )
+    
+    context = {
+        'all_cats': all_cats,
+        'cat_count': all_cats.count(),
+    }
+    return render(request, 'cats/gallery.html', context)
 
 
 @login_required(login_url='login')

@@ -415,6 +415,102 @@
                         У вас пока нет котов. Добавьте первого питомца в форму слева.
                     </div>
                 {% endif %}
+
+                    {% if all_achievements %}
+                        <section class="panel cabinet-panel" id="all-achievements">
+                            <h2 class="cabinet-title">Достижения</h2>
+                            <div class="form-stack" style="margin-bottom: 20px;">
+                                <form method="post" class="form-stack">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="create_achievement">
+                                    <div class="field full">
+                                        <label>Новое достижение</label>
+                                        <input type="text" name="achievement_name" placeholder="Название достижения" maxlength="64">
+                                    </div>
+                                    <button type="submit" class="button">Добавить</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Название</th>
+                                            <th>Котов</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for achievement in all_achievements %}
+                                            <tr>
+                                                <td>{{ achievement.id }}</td>
+                                                <td>{{ achievement.name }}</td>
+                                                <td>{{ achievement.cat_count }}</td>
+                                                <td>
+                                                    <form method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="delete_achievement">
+                                                        <input type="hidden" name="achievement_id" value="{{ achievement.id }}">
+                                                        <button type="submit" class="button button-alt" onclick="return confirm('Удалить достижение {{ achievement.name }}?')">Удалить</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="panel cabinet-panel" id="all-statuses">
+                            <h2 class="cabinet-title">Статусы владения</h2>
+                            <div class="form-stack" style="margin-bottom: 20px;">
+                                <form method="post" class="form-stack">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="create_status">
+                                    <div class="field full">
+                                        <label>Название</label>
+                                        <input type="text" name="status_name" placeholder="Название статуса" maxlength="64">
+                                    </div>
+                                    <div class="field full">
+                                        <label>Описание (опционально)</label>
+                                        <textarea name="status_desc" placeholder="Описание статуса" maxlength="500"></textarea>
+                                    </div>
+                                    <button type="submit" class="button">Добавить</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Название</th>
+                                            <th>Описание</th>
+                                            <th>Котов</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for status in all_statuses %}
+                                            <tr>
+                                                <td>{{ status.id }}</td>
+                                                <td>{{ status.name }}</td>
+                                                <td>{{ status.description|truncatewords:5 }}</td>
+                                                <td>{{ status.cat_count }}</td>
+                                                <td>
+                                                    <form method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="delete_status">
+                                                        <input type="hidden" name="status_id" value="{{ status.id }}">
+                                                        <button type="submit" class="button button-alt" onclick="return confirm('Удалить статус {{ status.name }}?')">Удалить</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    {% endif %}
             </section>
 
             {% if admin_cats %}

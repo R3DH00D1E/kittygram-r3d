@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все коты - Kittygram</title>
+    <link rel="stylesheet" href="{% static 'cats/retro.css' %}">
+    <style>
+        .gallery-page {
+            min-height: 100vh;
+            padding-bottom: 32px;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-header h1 {
+            margin: 0;
+        }
+
+        .gallery-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-nav a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 0 16px;
+            border: 1px solid var(--window-shadow);
+            background: linear-gradient(180deg, #f7f7f7, #d6d6d6);
+            text-decoration: none;
+            color: var(--ink);
+            box-shadow:
+                inset 1px 1px 0 var(--window-light),
+                inset -1px -1px 0 var(--window-dark);
+            cursor: pointer;
+            font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: none;
+        }
+
+        .gallery-nav a:hover {
+            background: linear-gradient(180deg, #ffffff, #dcdcdc);
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .cat-card {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cat-photo {
+            width: 100%;
+            height: 180px;
+            background: #c0c0c0;
+            border: 1px solid var(--window-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: var(--ink);
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .cat-meta {
+            font-size: 0.9rem;
+        }
+
+        .cat-meta h4 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+        }
+
+        .cat-meta p {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar panel">
+            <div>
+                <p class="kicker">cat gallery</p>
+                <h1>Все коты</h1>
+                <p class="subtitle">Полная коллекция всех зарегистрированных котов</p>
+            </div>
+            <div class="status-box">
+                <div><span>{{ cat_count }}</span><small>всего котов</small></div>
+            </div>
+        </header>
+
+        <div class="gallery-header">
+            <h2 style="margin: 0;">Коты ({{ cat_count }})</h2>
+            <div class="gallery-nav">
+                <a href="{% url 'home' %}">На главную</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cabinet' %}">Кабинет</a>
+                    <a href="{% url 'logout' %}">Выход</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Вход</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <main class="layout">
+            <section class="panel">
+                {% if all_cats %}
+                    <div class="cat-grid">
+                        {% for cat in all_cats %}
+                            <article class="cat-card">
+                                <div class="cat-photo">
+                                    {% if cat.image %}
+                                        <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <span>{{ cat.name|first|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="cat-meta">
+                                    <h4>{{ cat.name }}</h4>
+                                    <p><strong>{{ cat.get_color_display }}</strong> · {{ cat.birth_year }} г.р.</p>
+                                    <p>Владелец: <em>{{ cat.owner.username }}</em></p>
+                                    <p>Статус: {{ cat.ownership_status.name|default:"без статуса" }}</p>
+                                    <p>Достижений: {{ cat.achievement_count }}</p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>Пока здесь нет котов, но как только они появятся, будут видны здесь.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer class="footer panel">
+            <div>
+                <strong>Kittygram</strong>
+                <p>Сделано в духе старых сайтов 90-х - 2000-х, но без боли для пользователя.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -4,7 +4,7 @@ from django.urls import include, path
 from django.views.static import serve
 from cats.views import (
     AchievementViewSet, CatViewSet, OwnershipStatusViewSet, UserViewSet,
-    home_page, login_view, register_view, cabinet_view, admin_dashboard, logout_view,
+    home_page, login_view, register_view, cabinet_view, admin_dashboard, logout_view, cats_gallery_view,
     api_delete_cat, api_update_cat_status, api_list_ownership_statuses
 )
 from cats.views import create_cat_view, debug_media_check
@@ -24,6 +24,7 @@ urlpatterns = [
     path('register/', register_view, name='register'),
     path('logout/', logout_view, name='logout'),
     path('cabinet/', cabinet_view, name='cabinet'),
+    path('cats/', cats_gallery_view, name='cats_gallery'),
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('cats/create/', create_cat_view, name='create_cat'),
     path('debug/media-check/', debug_media_check, name='debug_media_check'),
