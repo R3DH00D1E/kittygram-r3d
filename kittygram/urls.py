@@ -2,6 +2,7 @@ from rest_framework import routers
 from django.contrib import admin
 from django.urls import include, path
 from django.views.static import serve
+from django.views.generic import TemplateView
 from cats.views import (
     AchievementViewSet, CatViewSet, OwnershipStatusViewSet, UserViewSet,
     home_page, login_view, register_view, cabinet_view, admin_dashboard, logout_view, cats_gallery_view,
@@ -31,6 +32,7 @@ urlpatterns = [
     path('api/cat/<int:cat_id>/delete/', api_delete_cat, name='api_delete_cat'),
     path('api/cat/<int:cat_id>/status/', api_update_cat_status, name='api_update_cat_status'),
     path('api/ownership-statuses/', api_list_ownership_statuses, name='api_list_ownership_statuses'),
+    path('privacy/', TemplateView.as_view(template_name='cats/privacy_policy.html'), name='privacy_policy'),
     path('', include(router.urls)),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
