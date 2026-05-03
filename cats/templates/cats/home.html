@@ -118,6 +118,7 @@
                                     <h4>{{ cat.name }}</h4>
                                     <p>{{ cat.get_color_display }} · {{ cat.birth_year }} г.р.</p>
                                     <p>Владелец: {{ cat.owner.username }}</p>
+                                    <p>Статус владения: {{ cat.ownership_status.name|default:"без статуса" }}</p>
                                     <p>Достижений: {{ cat.achievement_count }}</p>
                                 </div>
                             </article>

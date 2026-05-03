@@ -148,11 +148,24 @@ def _get_cabinet_context(user, error_message=''):
         .order_by('-id')
     )
 
+    admin_cats = None
+    admin_users = None
+    if user.is_staff or user.is_superuser:
+        admin_cats = (
+            Cat.objects.select_related('owner', 'ownership_status')
+            .prefetch_related('achievements')
+            .annotate(achievement_count=Count('achievements'))
+            .order_by('-id')
+        )
+        admin_users = DjangoUser.objects.order_by('id')
+
     return {
         'cat_count': user_cats.count(),
         'cat_count_with_images': user_cats.exclude(image='').count(),
         'cat_count_with_status': user_cats.exclude(ownership_status__isnull=True).count(),
         'user_cats': user_cats,
+        'admin_cats': admin_cats,
+        'admin_users': admin_users,
         'choices': CHOICES,
         'ownership_statuses': OwnershipStatus.objects.order_by('name'),
         'error_message': error_message,
@@ -192,7 +205,9 @@ def cabinet_view(request):
                 return redirect('cabinet')
 
         elif action == 'update_cat':
-            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'), owner=request.user)
+            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'))
+            if not (request.user.is_staff or request.user.is_superuser or cat.owner_id == request.user.id):
+                return JsonResponse({'success': False, 'error': 'Недостаточно прав.'}, status=403)
 
             name = (request.POST.get('name') or '').strip()
             color = request.POST.get('color')
@@ -219,8 +234,19 @@ def cabinet_view(request):
                 return redirect('cabinet')
 
         elif action == 'delete_cat':
-            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'), owner=request.user)
+            cat = get_object_or_404(Cat, id=request.POST.get('cat_id'))
+            if not (request.user.is_staff or request.user.is_superuser or cat.owner_id == request.user.id):
+                return JsonResponse({'success': False, 'error': 'Недостаточно прав.'}, status=403)
             cat.delete()
+            return redirect('cabinet')
+
+        elif action == 'update_user' and (request.user.is_staff or request.user.is_superuser):
+            target_user = get_object_or_404(DjangoUser, id=request.POST.get('user_id'))
+            target_user.username = (request.POST.get('username') or target_user.username).strip()
+            target_user.email = (request.POST.get('email') or target_user.email).strip()
+            target_user.is_staff = bool(request.POST.get('is_staff'))
+            target_user.is_superuser = bool(request.POST.get('is_superuser'))
+            target_user.save()
             return redirect('cabinet')
 
     context = _get_cabinet_context(request.user, error_message)

@@ -206,6 +206,42 @@
             border: 1px dashed var(--window-dark);
         }
 
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--window-shadow);
+            background: #c0c0c0;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 10px;
+            border: 1px solid var(--window-shadow);
+            background: #c0c0c0;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: linear-gradient(180deg, var(--titlebar-active), var(--titlebar));
+            color: var(--title-text);
+        }
+
+        .admin-row-form {
+            display: grid;
+            gap: 8px;
+        }
+
+        .admin-row-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 900px) {
             .cabinet-layout {
                 grid-template-columns: 1fr;
@@ -380,6 +416,129 @@
                     </div>
                 {% endif %}
             </section>
+
+            {% if admin_cats %}
+                <section class="panel cabinet-panel" id="all-cats">
+                    <h2 class="cabinet-title">Все коты</h2>
+                    <div class="cat-grid">
+                        {% for cat in admin_cats %}
+                            <article class="cat-card">
+                                <div class="cat-card-head">
+                                    <div class="cat-preview">
+                                        {% if cat.image %}
+                                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                                        {% else %}
+                                            <div class="cat-preview-placeholder">{{ cat.name|first|upper }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="cat-meta">
+                                        <h3>{{ cat.name }}</h3>
+                                        <p class="muted">Владелец: {{ cat.owner.username }}</p>
+                                        <p class="muted">{{ cat.get_color_display }} · {{ cat.birth_year }} г.р.</p>
+                                        <div class="cat-badges">
+                                            <span class="badge-inline">Статус: {{ cat.ownership_status.name|default:"без статуса" }}</span>
+                                            <span class="badge-inline">Достижений: {{ cat.achievement_count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form method="post" enctype="multipart/form-data" class="form-stack">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="update_cat">
+                                    <input type="hidden" name="cat_id" value="{{ cat.id }}">
+
+                                    <div class="cat-edit-grid">
+                                        <div class="field full">
+                                            <label>Имя</label>
+                                            <input type="text" name="name" value="{{ cat.name }}" maxlength="16" required>
+                                        </div>
+                                        <div class="field">
+                                            <label>Цвет</label>
+                                            <select name="color" required>
+                                                {% for value, label in choices %}
+                                                    <option value="{{ value }}" {% if cat.color == value %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="field">
+                                            <label>Год рождения</label>
+                                            <input type="number" name="birth_year" min="1980" max="{% now "Y" %}" value="{{ cat.birth_year }}" required>
+                                        </div>
+                                        <div class="field full">
+                                            <label>Статус владения</label>
+                                            <select name="ownership_status">
+                                                <option value="">Без статуса</option>
+                                                {% for status in ownership_statuses %}
+                                                    <option value="{{ status.id }}" {% if cat.ownership_status_id == status.id %}selected{% endif %}>{{ status.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="field full">
+                                            <label>Новая фотография</label>
+                                            <input type="file" name="image" accept="image/*">
+                                        </div>
+                                        <div class="field full">
+                                            <label>
+                                                <input type="checkbox" name="remove_image" value="1">
+                                                Удалить текущее фото
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="cat-actions">
+                                        <button type="submit" class="button">Сохранить</button>
+                                        <button type="submit" name="action" value="delete_cat" class="button button-alt" onclick="return confirm('Удалить кота {{ cat.name }}?')">Удалить кота</button>
+                                    </div>
+                                </form>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="panel cabinet-panel" id="all-users">
+                    <h2 class="cabinet-title">Пользователи</h2>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Пользователь</th>
+                                    <th>Email</th>
+                                    <th>Права</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for profile in admin_users %}
+                                    <tr>
+                                        <td>{{ profile.id }}</td>
+                                        <td>
+                                            <form method="post" class="admin-row-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="update_user">
+                                                <input type="hidden" name="user_id" value="{{ profile.id }}">
+                                                <input type="text" name="username" value="{{ profile.username }}" maxlength="150" required>
+                                        </td>
+                                        <td>
+                                                <input type="email" name="email" value="{{ profile.email }}">
+                                        </td>
+                                        <td>
+                                                <label><input type="checkbox" name="is_staff" {% if profile.is_staff %}checked{% endif %}> staff</label><br>
+                                                <label><input type="checkbox" name="is_superuser" {% if profile.is_superuser %}checked{% endif %}> superuser</label>
+                                        </td>
+                                        <td>
+                                                <div class="admin-row-actions">
+                                                    <button type="submit" class="button">Сохранить</button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            {% endif %}
         </section>
     </div>
 </body>
