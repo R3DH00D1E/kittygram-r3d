@@ -146,10 +146,21 @@
                     <span>retro photo wall</span>
                 </div>
                 <div class="gallery-strip">
-                    <div class="snapshot">CAT PIC 01</div>
-                    <div class="snapshot snapshot-alt">CAT PIC 02</div>
-                    <div class="snapshot">CAT PIC 03</div>
-                    <div class="snapshot snapshot-alt">CAT PIC 04</div>
+                    {% for cat in gallery_cats %}
+                        <div class="snapshot {% cycle 'snapshot-alt' '' %}">
+                            {% if cat.image %}
+                                <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <span>{{ cat.name|first|upper }}</span>
+                            {% endif %}
+                            <p style="text-align: center; margin-top: 8px; font-weight: bold;">{{ cat.name }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="snapshot">CAT PIC 01</div>
+                        <div class="snapshot snapshot-alt">CAT PIC 02</div>
+                        <div class="snapshot">CAT PIC 03</div>
+                        <div class="snapshot snapshot-alt">CAT PIC 04</div>
+                    {% endfor %}
                 </div>
             </section>
         </main>

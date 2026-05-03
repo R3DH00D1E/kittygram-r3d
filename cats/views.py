@@ -332,6 +332,12 @@ def home_page(request):
         .annotate(achievement_count=Count('achievements'))
         .order_by('-id')[:6]
     )
+    
+    # Get random cats for gallery (only those with images, max 4)
+    import random
+    all_cats_with_images = list(Cat.objects.select_related('owner').exclude(image=''))
+    gallery_cats = random.sample(all_cats_with_images, min(4, len(all_cats_with_images))) if all_cats_with_images else []
+    
     latest_achievements = Achievement.objects.annotate(
         cat_count=Count('cat')
     ).order_by('-id')[:8]
@@ -348,6 +354,7 @@ def home_page(request):
         'user_count': User.objects.count(),
         'achievement_count': Achievement.objects.count(),
         'featured_cats': featured_cats,
+        'gallery_cats': gallery_cats,
         'latest_achievements': latest_achievements,
         'debug_mode': request.session.get('debug_mode', False),
         'user': request.user,
