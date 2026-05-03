@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User as DjangoUser
 from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -13,7 +13,7 @@ from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
 import os
 from django.conf import settings
 
-from .serializers import AchievementSerializer, CatSerializer, UserSerializer
+from .serializers import AchievementSerializer, CatSerializer, OwnershipStatusSerializer, UserSerializer
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -55,9 +55,16 @@ class CatViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+
+class OwnershipStatusViewSet(viewsets.ModelViewSet):
+    queryset = OwnershipStatus.objects.all().order_by('id')
+    serializer_class = OwnershipStatusSerializer
+    permission_classes = [IsAdminUser]
 
 
 class AchievementViewSet(viewsets.ReadOnlyModelViewSet):

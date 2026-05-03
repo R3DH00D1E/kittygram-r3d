@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.static import serve
 from cats.views import (
-    AchievementViewSet, CatViewSet, UserViewSet,
+    AchievementViewSet, CatViewSet, OwnershipStatusViewSet, UserViewSet,
     home_page, login_view, register_view, cabinet_view, admin_dashboard, logout_view,
     api_delete_cat, api_update_cat_status, api_list_ownership_statuses
 )
@@ -15,6 +15,7 @@ router = routers.DefaultRouter()
 router.register('cats', CatViewSet)
 router.register('users', UserViewSet)
 router.register('achievements', AchievementViewSet)
+router.register('ownership-statuses', OwnershipStatusViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
