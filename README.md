@@ -459,6 +459,7 @@ Workflow: `.github/workflows/deploy.yml`
 | `SERVER_APP_DIR`       | Директория приложения на сервере | `/home/ubuntu/kittygram`                                             |
 | `DJANGO_SECRET_KEY`    | Django SECRET_KEY для продакшена                 | Генерируется случайно                              |
 | `DJANGO_ALLOWED_HOSTS` | Хосты через запятую                          | `example.com,1.2.3.4`                                                |
+| `WEB_PORT`             | Хостовый порт для публикации приложения при деплое; записывается в удалённый `.env` и используется в `docker-compose.server.yml` (fallback 80) | `8000` |
 | `GHCR_USERNAME`        | GitHub username                                               | `Юзернейм из ГитХаба`                               |
 | `GHCR_TOKEN`           | GitHub Personal Access Token (PAT)                            | Создается в Параметрах учетной записи |
 

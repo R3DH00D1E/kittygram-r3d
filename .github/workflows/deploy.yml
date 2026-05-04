@@ -102,6 +102,7 @@ jobs:
             DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
             DJANGO_DEBUG=False
             DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
+            WEB_PORT=${{ secrets.WEB_PORT }}
             IMAGE=${IMAGE_REF}
             EOF
 
