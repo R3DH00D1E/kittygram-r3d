@@ -364,48 +364,6 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 - **ReDoc:** http://localhost:80/api/redoc/ (альтернативная документация)
 - **OpenAPI Schema:** http://localhost:80/api/schema/ (JSON-схема API)
 
-## Структура проекта
-
-```
-kittygram-r3d/
-├── cats/                    # Основное приложение
-│   ├── migrations/         # Миграции БД
-│   ├── static/             # CSS и статичные файлы
-│   ├── templates/          # HTML шаблоны
-│   ├── models.py           # Модели данных
-│   ├── serializers.py      # DRF сериализаторы
-│   ├── views.py            # API ViewSets и веб-views
-│   ├── admin.py            # Админ-панель
-│   └── apps.py             # Конфигурация приложения
-├── kittygram/              # Настройки проекта
-│   ├── settings.py         # Конфиг Django
-│   ├── urls.py             # Маршруты
-│   ├── wsgi.py             # WSGI конфиг
-│   └── asgi.py             # ASGI конфиг
-├── media/                  # Загруженные файлы (фото котов)
-├── Dockerfile              # Docker образ
-├── docker-compose.server.yml
-├── docker-entrypoint.sh    # Скрипт инициализации
-├── manage.py               # Команда управления Django
-├── requirements.txt        # Python зависимости
-└── README.md              # Этот файл
-```
-
-## Цвета котов
-
-Доступные окрасы:
-
-- Gray (Серый)
-- Black (Чёрный)
-- White (Белый)
-- Ginger (Рыжий)
-- Mixed (Смешанный)
-- Tabby (Полосатый)
-- Calico (Трёхцветный)
-- Cream (Кремовый)
-- Blue (Голубой)
-- Fawn (Палевый)
-
 ## Docker
 
 В проекте используются файлы:

@@ -77,6 +77,16 @@
             gap: 16px;
         }
 
+        .cabinet-section-group {
+            display: grid;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .cabinet-section-group > .cabinet-panel {
+            margin-bottom: 0;
+        }
+
         .form-stack {
             display: grid;
             gap: 10px;
@@ -523,6 +533,7 @@
                     {% endif %}
 
                     {% if all_achievements %}
+                        <div class="cabinet-section-group">
                         <section class="panel cabinet-panel" id="all-achievements">
                             <h2 class="cabinet-title">Достижения</h2>
                             <div class="form-stack" style="margin-bottom: 20px;">
@@ -626,6 +637,7 @@
                                 </table>
                             </div>
                         </section>
+                        </div>
                     {% endif %}
 
                     {% if admin_users %}
