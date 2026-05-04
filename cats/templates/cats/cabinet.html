@@ -532,8 +532,11 @@
                         </div>
                     {% endif %}
 
-                    {% if all_achievements %}
+                    {% if all_achievements or admin_users %}
                         <div class="cabinet-section-group">
+                    {% endif %}
+
+                    {% if all_achievements %}
                         <section class="panel cabinet-panel" id="all-achievements">
                             <h2 class="cabinet-title">Достижения</h2>
                             <div class="form-stack" style="margin-bottom: 20px;">
@@ -637,7 +640,6 @@
                                 </table>
                             </div>
                         </section>
-                        </div>
                     {% endif %}
 
                     {% if admin_users %}
@@ -692,6 +694,10 @@
                                 </table>
                             </div>
                         </section>
+                    {% endif %}
+
+                    {% if all_achievements or admin_users %}
+                        </div>
                     {% endif %}
                 </section>
             </div>
