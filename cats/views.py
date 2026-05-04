@@ -412,8 +412,6 @@ def api_list_ownership_statuses(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
-@login_required(login_url='login')
-@login_required(login_url='login')
 def cats_gallery_view(request):
     """Page with all cats."""
     all_cats = (
