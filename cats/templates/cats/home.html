@@ -148,18 +148,32 @@
                 <div class="gallery-strip">
                     {% for cat in gallery_cats %}
                         <div class="snapshot {% cycle 'snapshot-alt' '' %}">
-                            {% if cat.image %}
-                                <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            {% else %}
-                                <span>{{ cat.name|first|upper }}</span>
-                            {% endif %}
-                            <p style="text-align: center; margin-top: 8px; font-weight: bold;">{{ cat.name }}</p>
+                            <div class="snapshot-media">
+                                {% if cat.image %}
+                                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="snapshot-image">
+                                {% else %}
+                                    <span>{{ cat.name|first|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <p class="snapshot-title">{{ cat.name }}</p>
                         </div>
                     {% empty %}
-                        <div class="snapshot">CAT PIC 01</div>
-                        <div class="snapshot snapshot-alt">CAT PIC 02</div>
-                        <div class="snapshot">CAT PIC 03</div>
-                        <div class="snapshot snapshot-alt">CAT PIC 04</div>
+                        <div class="snapshot">
+                            <div class="snapshot-media">CAT PIC 01</div>
+                            <p class="snapshot-title">CAT PIC 01</p>
+                        </div>
+                        <div class="snapshot snapshot-alt">
+                            <div class="snapshot-media">CAT PIC 02</div>
+                            <p class="snapshot-title">CAT PIC 02</p>
+                        </div>
+                        <div class="snapshot">
+                            <div class="snapshot-media">CAT PIC 03</div>
+                            <p class="snapshot-title">CAT PIC 03</p>
+                        </div>
+                        <div class="snapshot snapshot-alt">
+                            <div class="snapshot-media">CAT PIC 04</div>
+                            <p class="snapshot-title">CAT PIC 04</p>
+                        </div>
                     {% endfor %}
                 </div>
             </section>
