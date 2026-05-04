@@ -1,120 +1,121 @@
 # Kittygram API
 
-Kittygram - учебный REST API на Django REST Framework для управления котиками и их достижениями.
+REST API для управления котиками и их достижениями.
 
-Проект поддерживает:
+## Зависимости
 
-- регистрацию пользователей;
-- JWT-аутентификацию;
-- CRUD-операции для котов;
-- справочник достижений (15 предзаполненных значений);
-- запуск в Docker;
-- CI/CD деплой на Ubuntu-сервер через GitHub Actions.
+```
+Django==3.2.3
+djangorestframework==3.12.4
+djangorestframework-simplejwt==4.8.0
+djoser==2.1.0
+gunicorn==22.0.0
+whitenoise==6.7.0
+Pillow==11.3.0
+PyJWT==2.1.0
+```
 
-## Технологии
+## Переменные окружения
 
-- Python 3.9+
-- Django 3.2.3
-- Django REST Framework 3.12.4
-- Djoser 2.1.0
-- SimpleJWT 4.8.0
-- SQLite
-- Gunicorn
-- WhiteNoise
-- Docker / Docker Compose
-- GitHub Actions
+Создайте файл `.env` на основе `.env.example`:
 
-## Локальный запуск (без Docker)
+```
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
 
-1. Клонируйте репозиторий и перейдите в директорию проекта:
+## Локальный запуск
+
+### 1. Клонировать репозиторий:
 
 ```bash
-git clone github.com/R3DH00D1E/kittygram-r3d
+git clone https://github.com/R3DH00D1E/kittygram-r3d.git
 cd kittygram-r3d
 ```
 
-2. Создайте и активируйте виртуальное окружение:
+### 2. Создать и активировать виртуальное окружение:
 
 ```bash
 python3 -m venv env
 source env/bin/activate
 ```
 
-3. Установите зависимости:
+### 3. Установить зависимости:
 
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-4. Выполните миграции:
+### 4. Выполнить миграции:
 
 ```bash
 python manage.py migrate
 ```
 
-5. Запустите сервер:
+### 5. Создать суперпользователя:
+
+```bash
+python manage.py createsuperuser
+```
+
+### 6. Запустить проект:
 
 ```bash
 python manage.py runserver
 ```
 
-Проект можно открыть и на Mac с Apple Silicon (M-чипы на архитектуре ARM64), и на Linux AMD64/ARM64.
-
-Для этого не нужны специальные команды: Docker-образ собирается для обеих платформ, а зависимости ставятся из `requirements.txt`.
-
-### Если запускать через Docker
+## Запуск через Docker
 
 ```bash
 docker compose -f docker-compose.server.yml --env-file .env up -d
 ```
 
-После запуска сайт должен открываться по адресу `http://127.0.0.1/` или по адресу сервера, если это удалённая машина.
+Миграции применяются автоматически при старте контейнера.
 
-### Если запускать без Docker
-
-```bash
-python3 -m venv env
-source env/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-Важно: сначала должен успешно установиться `Pillow`, потому что в проекте используется загрузка изображений котов.
-
-## Основные эндпоинты
+## API эндпоинты
 
 ### Аутентификация
 
-- `POST /auth/users/` - регистрация
-- `POST /auth/jwt/create/` - получение access/refresh
-- `POST /auth/jwt/refresh/` - обновление access
-- `POST /auth/jwt/verify/` - проверка токена
+| Метод | URL | Описание |
+|-------|-----|---------|
+| POST | `/auth/users/` | Регистрация |
+| POST | `/auth/jwt/create/` | Получить токен |
+| POST | `/auth/jwt/refresh/` | Обновить токен |
 
 ### Пользователи
 
-- `GET /users/`
-- `GET /users/{id}/`
+| Метод | URL | Описание |
+|-------|-----|---------|
+| GET | `/users/` | Список пользователей (только чтение) |
 
 ### Коты
 
-- `GET /cats/`
-- `POST /cats/`
-- `GET /cats/{id}/`
-- `PUT /cats/{id}/`
-- `PATCH /cats/{id}/`
-- `DELETE /cats/{id}/`
+| Метод | URL | Описание | Права |
+|-------|-----|---------|-------|
+| GET, POST | `/cats/` | Список/создание котов | Все / Авторизованные |
+| GET, PUT, DELETE | `/cats/{id}/` | Детали кота | Все / Владелец |
 
-### Достижения (только чтение)
+**Фильтры:** `color`, `owner`  
+**Поиск:** `name`  
+**Сортировка:** `name`, `birth_year`
 
-- `GET /achievements/`
-- `GET /achievements/{id}/`
+### Достижения
 
-## Формат achievements в запросах
+| Метод | URL | Описание |
+|-------|-----|---------|
+| GET | `/achievements/` | Список достижений (только чтение) |
 
-В текущей версии достижения передаются **числовыми ID**:
+## Документация API
+
+- **Swagger UI:** http://localhost:8000/api/docs/
+- **ReDoc:** http://localhost:8000/api/redoc/
+- **OpenAPI Schema:** http://localhost:8000/api/schema/
+
+## Формат данных
+
+### Пример создания кота с достижениями:
 
 ```json
 {
@@ -126,7 +127,7 @@ python manage.py runserver
 }
 ```
 
-Пример ответа:
+### Пример ответа:
 
 ```json
 {
