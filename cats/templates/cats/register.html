@@ -143,6 +143,45 @@
         .debug-toggle:hover {
             background: linear-gradient(180deg, #ffffff, #dcdcdc);
         }
+
+        .debug-panel {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            width: min(320px, calc(100vw - 32px));
+            padding: 16px;
+            z-index: 1001;
+            display: grid;
+            gap: 10px;
+        }
+
+        .debug-panel h4 {
+            margin: 0;
+            color: #123d74;
+        }
+
+        .debug-panel p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .debug-panel .debug-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .debug-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(126,199,255,0.22), rgba(79,130,191,0.14));
+            border: 1px solid rgba(31,67,106,0.18);
+            text-decoration: none;
+            color: #123d74;
+            font-size: 0.82rem;
+        }
     </style>
 </head>
 <body>
@@ -199,6 +238,18 @@
     </div>
 
     <a href="?debug=1" class="debug-toggle">Debug Menu</a>
+
+    {% if debug_mode %}
+        <div class="panel debug-panel">
+            <h4>Debug mode is ON</h4>
+            <p>Сессия помечена как отладочная.</p>
+            <div class="debug-links">
+                <a class="debug-chip" href="?debug=0">Скрыть</a>
+                <a class="debug-chip" href="/">Главная</a>
+                <a class="debug-chip" href="/login/">Вход</a>
+            </div>
+        </div>
+    {% endif %}
 
     <footer style="text-align: center; margin-top: 32px; font-size: 0.8rem; color: #555; padding: 16px;">
         <p><a href="/privacy/" target="_blank" style="text-decoration: underline; color: var(--titlebar);">Политика конфиденциальности</a></p>

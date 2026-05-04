@@ -19,6 +19,15 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
+def _set_debug_mode_from_query(request):
+    debug_mode = request.GET.get('debug')
+    if debug_mode == '1':
+        request.session['debug_mode'] = True
+    elif debug_mode == '0':
+        request.session['debug_mode'] = False
+    return request.session.get('debug_mode', False)
+
+
 class IsOwnerOrAdmin:
     """Helper permission: owner or admin allowed for unsafe actions."""
     @staticmethod
@@ -88,13 +97,9 @@ def login_view(request):
             context = {'error': 'Неверное имя пользователя или пароль'}
             return render(request, 'cats/login.html', context)
     
-    debug_mode = request.GET.get('debug')
-    if debug_mode == '1':
-        request.session['debug_mode'] = True
-    elif debug_mode == '0':
-        request.session['debug_mode'] = False
-    
-    return render(request, 'cats/login.html')
+    debug_mode = _set_debug_mode_from_query(request)
+
+    return render(request, 'cats/login.html', {'debug_mode': debug_mode})
 
 
 def register_view(request):
@@ -144,13 +149,9 @@ def register_view(request):
             context = {'error': f'Ошибка при регистрации: {str(e)}'}
             return render(request, 'cats/register.html', context)
 
-    debug_mode = request.GET.get('debug')
-    if debug_mode == '1':
-        request.session['debug_mode'] = True
-    elif debug_mode == '0':
-        request.session['debug_mode'] = False
-    
-    return render(request, 'cats/register.html')
+    debug_mode = _set_debug_mode_from_query(request)
+
+    return render(request, 'cats/register.html', {'debug_mode': debug_mode})
 
 
 def _get_cabinet_context(user, error_message=''):
@@ -456,11 +457,7 @@ def home_page(request):
         cat_count=Count('cat')
     ).order_by('-id')[:8]
 
-    debug_mode = request.GET.get('debug')
-    if debug_mode == '1':
-        request.session['debug_mode'] = True
-    elif debug_mode == '0':
-        request.session['debug_mode'] = False
+    debug_mode = _set_debug_mode_from_query(request)
     
     context = {
         'cat_count': Cat.objects.count(),
@@ -469,7 +466,7 @@ def home_page(request):
         'featured_cats': featured_cats,
         'gallery_cats': gallery_cats,
         'latest_achievements': latest_achievements,
-        'debug_mode': request.session.get('debug_mode', False),
+        'debug_mode': debug_mode,
         'user': request.user,
     }
     return render(request, 'cats/home.html', context)
