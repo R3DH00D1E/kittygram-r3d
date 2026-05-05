@@ -358,12 +358,6 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 Применяется к: `UserViewSet`, `OwnershipStatusViewSet`
 
-## Документация API
-
-- **Swagger UI:** http://localhost:80/api/docs/ (интерактивная документация)
-- **ReDoc:** http://localhost:80/api/redoc/ (альтернативная документация)
-- **OpenAPI Schema:** http://localhost:80/api/schema/ (JSON-схема API)
-
 ## Docker
 
 В проекте используются файлы:
@@ -388,7 +382,7 @@ docker run --rm -p 80:80 \
 
 ## CI/CD через GitHub Actions
 
-Workflow: `.github/workflows/deploy.yml`
+Workflow находится по пути: `.github/workflows/deploy.yml`
 
 ### Когда запускается:
 
@@ -488,36 +482,3 @@ docker compose -f docker-compose.server.yml down
 # Применить миграции в контейнере
 docker compose -f docker-compose.server.yml exec web python manage.py migrate
 ```
-
-## Решение проблем
-
-### 401 Unauthorized при обращении к защищённому API
-
-Проверить:
-
-- Токен правильно передаётся в заголовке `Authorization: Bearer YOUR_ACCESS_TOKEN`
-- Токен не истёк (используйте refresh для получения нового)
-
-### 400 Bad Request
-
-Проверить:
-
-- JSON валидность
-- Типы полей (например, `achievements` должен быть массивом чисел)
-- Обязательность полей
-
-### 404 Not Found
-
-Проверить:
-
-- URL и ID ресурса
-- Существует ли кот/пользователь в БД
-
-### Ошибки деплоя в GitHub Actions
-
-Проверять:
-
-- Логи в разделе `Actions` на GitHub
-- SSH-подключение к серверу
-- Значения Secrets
-- Наличие прав на GHCR
