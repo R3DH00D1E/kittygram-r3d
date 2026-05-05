@@ -422,7 +422,7 @@ Workflow находится по пути: `.github/workflows/deploy.yml`
 3. Выбрать scope `read:packages`
 4. Скопировать токен и добавить в Secrets как `GHCR_TOKEN`
 
-## Подготовка Ubuntu-сервера
+## Подготовка сервера под CI/CD
 
 На сервере должны быть установлены:
 
@@ -446,28 +446,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-## Полезные команды
-
-### Локальная разработка
-
-```bash
-# Применить миграции
-python manage.py migrate
-
-# Создать суперпользователя
-python manage.py createsuperuser
-
-# Запустить сервер разработки
-python manage.py runserver
-
-# Создать миграцию
-python manage.py makemigrations
-
-# Собрать статику
-python manage.py collectstatic
-```
-
-### Docker
+### Полезные команды для Docker:
 
 ```bash
 # Запустить контейнеры
