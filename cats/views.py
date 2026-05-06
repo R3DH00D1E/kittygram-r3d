@@ -17,6 +17,7 @@ from django.conf import settings
 from .serializers import AchievementSerializer, CatSerializer, OwnershipStatusSerializer, UserSerializer
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import BasePermission
 
 
 def _set_debug_mode_from_query(request):
@@ -36,6 +37,18 @@ class IsOwnerOrAdmin:
         if not user.is_authenticated:
             return False
         return user.is_staff or user.is_superuser or obj.owner_id == user.id
+
+
+class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
+    """Allow authenticated users to read and admins to modify."""
+
+    def has_permission(self, request, view):
+        if request.method in ('GET', 'HEAD', 'OPTIONS'):
+            return request.user.is_authenticated
+        return request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)
 
 
 class CatViewSet(viewsets.ModelViewSet):
@@ -74,7 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class OwnershipStatusViewSet(viewsets.ModelViewSet):
     queryset = OwnershipStatus.objects.all().order_by('id')
     serializer_class = OwnershipStatusSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
 
 
 class AchievementViewSet(viewsets.ReadOnlyModelViewSet):
@@ -402,7 +415,6 @@ def api_update_cat_status(request, cat_id):
 
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.is_staff or u.is_superuser)
 @require_http_methods(["GET"])
 def api_list_ownership_statuses(request):
     """AJAX API: list all ownership statuses."""
