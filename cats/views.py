@@ -8,6 +8,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
 from django.utils import timezone
@@ -55,6 +56,10 @@ class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
     serializer_class = CatSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['name', 'color']
+    ordering_fields = ['id', 'name', 'birth_year']
+    ordering = ['-id']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -88,6 +93,10 @@ class OwnershipStatusViewSet(viewsets.ModelViewSet):
     queryset = OwnershipStatus.objects.all().order_by('id')
     serializer_class = OwnershipStatusSerializer
     permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['id', 'name']
+    ordering = ['name']
 
 
 class AchievementViewSet(viewsets.ReadOnlyModelViewSet):
