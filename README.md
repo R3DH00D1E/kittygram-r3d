@@ -25,19 +25,6 @@
 - Docker / Docker Compose
 - WhiteNoise (раздача статики)
 
-## Зависимости
-
-```
-Django==3.2.3
-djangorestframework==3.12.4
-djangorestframework-simplejwt==4.8.0
-djoser==2.1.0
-gunicorn==22.0.0
-whitenoise==6.7.0
-Pillow==11.3.0
-PyJWT==2.1.0
-```
-
 ## Переменные окружения
 
 Создайте файл `.env` на основе `.env.example`:
@@ -316,8 +303,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 [
   {
     "id": 1,
-    "username": "john_doe",
-    "email": "john@example.com",
+    "username": "Alexander",
+    "email": "alex@example.com",
     "cats": ["Барсик", "Мурзик"]
   }
 ]
@@ -373,7 +360,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 docker build -t kittygram:local .
 
 docker run --rm -p 80:80 \
-  -e DJANGO_SECRET_KEY='change-me' \
+  -e DJANGO_SECRET_KEY='secret-key' \
   -e DJANGO_ALLOWED_HOSTS='127.0.0.1,localhost' \
   kittygram:local
 ```
