@@ -51,7 +51,6 @@ class AchievementCat(models.Model):
 
 
 class OwnershipStatus(models.Model):
-    """Статусы владения котом (например: 'Владеет', 'В приюте', 'В поиске')."""
     name = models.CharField(max_length=64, unique=True)
     description = models.TextField(blank=True, default='')
 

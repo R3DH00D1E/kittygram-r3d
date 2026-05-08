@@ -31,7 +31,6 @@ def _set_debug_mode_from_query(request):
 
 
 class IsOwnerOrAdmin:
-    """Helper permission: owner or admin allowed for unsafe actions."""
     @staticmethod
     def has_object_permission(request, obj):
         user = request.user
@@ -41,8 +40,6 @@ class IsOwnerOrAdmin:
 
 
 class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
-    """Allow authenticated users to read and admins to modify."""
-
     def has_permission(self, request, view):
         if request.method in ('GET', 'HEAD', 'OPTIONS'):
             return request.user.is_authenticated
@@ -105,27 +102,21 @@ class AchievementViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def login_view(request):
-    """Login page for users"""
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
         user = authenticate(request, username=username, password=password)
-        
         if user is not None:
             login(request, user)
             return redirect('cabinet')
         else:
             context = {'error': 'Неверное имя пользователя или пароль'}
             return render(request, 'cats/login.html', context)
-    
     debug_mode = _set_debug_mode_from_query(request)
-
     return render(request, 'cats/login.html', {'debug_mode': debug_mode})
 
 
 def register_view(request):
-    """Registration page for new users"""
     if request.method == 'POST':
         username = request.POST.get('username')
         password1 = request.POST.get('password1')
@@ -133,19 +124,15 @@ def register_view(request):
         email = request.POST.get('email', '')
         consent_personal = bool(request.POST.get('consent_personal'))
         consent_photo = bool(request.POST.get('consent_photo'))
-
         if not consent_personal or not consent_photo:
             context = {'error': 'Вы должны согласиться на обработку данных и публикацию фотографий'}
             return render(request, 'cats/register.html', context)
-        
         if password1 != password2:
             context = {'error': 'Пароли не совпадают'}
             return render(request, 'cats/register.html', context)
-        
         if DjangoUser.objects.filter(username=username).exists():
             context = {'error': 'Пользователь с таким именем уже существует'}
             return render(request, 'cats/register.html', context)
-        
         try:
             user = DjangoUser.objects.create_user(
                 username=username,
@@ -218,7 +205,6 @@ def _get_cabinet_context(user, error_message=''):
 
 @login_required(login_url='login')
 def cabinet_view(request):
-    """Personal cabinet for managing user's cats."""
     error_message = ''
 
     if request.method == 'POST':
@@ -238,7 +224,6 @@ def cabinet_view(request):
                     error_message = 'Нужен профиль пользователя для загрузки фото.'
                 if image and getattr(request.user, 'profile', None) and not request.user.profile.consent_photo:
                     error_message = 'Для загрузки фотографии нужно подтвердить согласие на публикацию фото в профиле.'
-            
             if error_message:
                 context = _get_cabinet_context(request.user, error_message)
                 return render(request, 'cats/cabinet.html', context)
@@ -384,7 +369,6 @@ def admin_dashboard(request):
 @user_passes_test(lambda u: u.is_staff or u.is_superuser)
 @require_http_methods(["DELETE"])
 def api_delete_cat(request, cat_id):
-    """AJAX API: delete a cat."""
     try:
         cat = Cat.objects.get(id=cat_id)
         cat_name = cat.name
@@ -400,14 +384,11 @@ def api_delete_cat(request, cat_id):
 @user_passes_test(lambda u: u.is_staff or u.is_superuser)
 @require_http_methods(["POST", "OPTIONS"])
 def api_update_cat_status(request, cat_id):
-    """AJAX API: update cat ownership status."""
     if request.method == 'OPTIONS':
         return JsonResponse({'success': True})
-    
     try:
         cat = Cat.objects.get(id=cat_id)
         status_id = request.POST.get('status_id')
-        
         if status_id:
             ownership_status = OwnershipStatus.objects.get(id=status_id)
             cat.ownership_status = ownership_status
@@ -426,7 +407,6 @@ def api_update_cat_status(request, cat_id):
 @login_required(login_url='login')
 @require_http_methods(["GET"])
 def api_list_ownership_statuses(request):
-    """AJAX API: list all ownership statuses."""
     try:
         statuses = OwnershipStatus.objects.values('id', 'name')
         return JsonResponse({'success': True, 'statuses': list(statuses)})
@@ -435,7 +415,6 @@ def api_list_ownership_statuses(request):
 
 
 def cats_gallery_view(request):
-    """Page with all cats."""
     all_cats = (
         Cat.objects.select_related('owner', 'ownership_status')
         .prefetch_related('achievements')
@@ -457,7 +436,6 @@ def create_cat_view(request):
 
 @require_http_methods(["GET", "POST"])
 def logout_view(request):
-    """Logout user"""
     logout(request)
     return redirect('home')
 
@@ -496,22 +474,17 @@ def home_page(request):
 @login_required(login_url='login')
 @user_passes_test(lambda u: u.is_staff or settings.DEBUG)
 def debug_media_check(request):
-    """Debug helper: check that a cat image exists on disk and show its URL/path.
-
-    Usage: /debug/media-check/?cat_id=123
-    Only accessible to staff users or when DEBUG=True.
-    """
     cat_id = request.GET.get('cat_id')
     if not cat_id:
-        return JsonResponse({'success': False, 'error': 'cat_id required'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Необходим cat_id'}, status=400)
 
     try:
         cat = Cat.objects.get(id=cat_id)
     except Cat.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'cat not found'}, status=404)
+        return JsonResponse({'success': False, 'error': 'Кот не найден'}, status=404)
 
     if not cat.image:
-        return JsonResponse({'success': True, 'has_image': False, 'message': 'Cat has no image'})
+        return JsonResponse({'success': True, 'has_image': False, 'message': 'Кот не имеет изображения'})
 
     image_url = getattr(cat.image, 'url', None)
     image_path = getattr(cat.image, 'path', None)
