@@ -1,6 +1,9 @@
 services:
   web:
-    image: ${IMAGE}
+    image: ${IMAGE:-kittygram-r3d:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - .env
