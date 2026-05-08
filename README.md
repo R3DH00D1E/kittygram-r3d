@@ -44,39 +44,39 @@ git clone https://github.com/R3DH00D1E/kittygram-r3d.git
 cd kittygram-r3d
 ```
 
-### 2. Создать и активировать виртуальное окружение:
+macOS / Linux:
 
 ```bash
 python3 -m venv env
 source env/bin/activate
-```
-
-### 3. Установить зависимости:
-
-```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+cp .env.example .env
+./env/bin/python manage.py migrate
+./env/bin/python manage.py collectstatic --noinput
+./env/bin/python manage.py createsuperuser
+./env/bin/python manage.py runserver 127.0.0.1:8000
 ```
 
-### 4. Выполнить миграции:
+Windows (PS):
+
+```powershell
+python -m venv env
+.\env\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+Copy-Item .env.example .env
+env\Scripts\python.exe manage.py migrate
+env\Scripts\python.exe manage.py collectstatic --noinput
+env\Scripts\python.exe manage.py createsuperuser
+env\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+```
+
+Запуск через Docker:
 
 ```bash
-python manage.py migrate
+docker compose -f docker-compose.server.yml --env-file .env up -d
 ```
-
-### 5. Создать суперпользователя (для админ-панели):
-
-```bash
-python manage.py createsuperuser
-```
-
-### 6. Запустить проект:
-
-```bash
-python manage.py runserver
-```
-
-Приложение будет доступно на `http://127.0.0.1:80/`
 
 ## Запуск через Docker
 
