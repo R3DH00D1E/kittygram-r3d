@@ -30,9 +30,9 @@
 Создайте файл `.env` на основе `.env.example`:
 
 ```
-SECRET_KEY=secret-key
-DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
+DJANGO_SECRET_KEY=strong-secret
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=example.com,127.0.0.1,localhost
 ```
 
 ## Локальный запуск
