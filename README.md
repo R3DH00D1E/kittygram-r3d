@@ -74,13 +74,7 @@ env\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 Запуск через Docker:
 
 ```bash
-docker compose -f docker-compose.server.yml --env-file .env up -d
-```
-
-## Запуск через Docker
-
-```bash
-docker compose -f docker-compose.server.yml --env-file .env up -d
+docker compose up --build -d
 ```
 
 Миграции и сбор статики применяются автоматически при старте контейнера.
@@ -362,19 +356,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 - `Dockerfile` - образ приложения
 - `docker-entrypoint.sh` - скрипт инициализации контейнера
-- `docker-compose.server.yml` - конфигурация для продакшена
+- `docker-compose.yml` - конфигурация для продакшена
 - `.env.example` - пример переменных окружения
-
-### Локальная сборка и запуск контейнера
-
-```bash
-docker build -t kittygram:local .
-
-docker run --rm -p 80:80 \
-  -e DJANGO_SECRET_KEY='secret-key' \
-  -e DJANGO_ALLOWED_HOSTS='127.0.0.1,localhost' \
-  kittygram:local
-```
 
 После запуска приложение будет доступно на http://127.0.0.1/
 
@@ -448,14 +431,14 @@ newgrp docker
 
 ```bash
 # Запустить контейнеры
-docker compose -f docker-compose.server.yml up -d
+docker compose -f docker-compose.yml up -d
 
 # Посмотреть логи
-docker compose -f docker-compose.server.yml logs -f
+docker compose -f docker-compose.yml logs -f
 
 # Остановить контейнеры
-docker compose -f docker-compose.server.yml down
+docker compose -f docker-compose.yml down
 
 # Применить миграции в контейнере
-docker compose -f docker-compose.server.yml exec web python manage.py migrate
+docker compose -f docker-compose.yml exec web python manage.py migrate
 ```

@@ -79,7 +79,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           command_timeout: 10m
-          source: "docker-compose.server.yml"
+          source: "docker-compose.yml"
           target: "${{ secrets.SERVER_APP_DIR }}"
 
       - name: Deploy over SSH
@@ -107,6 +107,6 @@ jobs:
             EOF
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "$GHCR_USER_LC" --password-stdin
-            docker compose -f docker-compose.server.yml --env-file .env pull
-            docker compose -f docker-compose.server.yml --env-file .env up -d
+            docker compose -f docker-compose.yml --env-file .env pull
+            docker compose -f docker-compose.yml --env-file .env up -d
             docker image prune -f
