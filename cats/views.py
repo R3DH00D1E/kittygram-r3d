@@ -187,8 +187,8 @@ def _get_cabinet_context(user, error_message=''):
             .order_by('-id')
         )
         admin_users = DjangoUser.objects.order_by('id')
-        all_achievements = Achievement.objects.annotate(cat_count=Count('cat')).order_by('name')
-        all_statuses = OwnershipStatus.objects.annotate(cat_count=Count('cats')).order_by('name')
+        all_achievements = Achievement.objects.annotate(cat_count=Count('cat')).order_by('id')
+        all_statuses = OwnershipStatus.objects.annotate(cat_count=Count('cats')).order_by('id')
 
     return {
         'cat_count': user_cats.count(),
@@ -200,7 +200,7 @@ def _get_cabinet_context(user, error_message=''):
         'all_achievements': all_achievements,
         'all_statuses': all_statuses,
         'choices': CHOICES,
-        'ownership_statuses': OwnershipStatus.objects.order_by('name'),
+        'ownership_statuses': OwnershipStatus.objects.order_by('id'),
         'error_message': error_message,
     }
 
@@ -409,7 +409,7 @@ def api_update_cat_status(request, cat_id):
 @require_http_methods(["GET"])
 def api_list_ownership_statuses(request):
     try:
-        statuses = OwnershipStatus.objects.values('id', 'name')
+        statuses = OwnershipStatus.objects.order_by('id').values('id', 'name')
         return JsonResponse({'success': True, 'statuses': list(statuses)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)

@@ -16,11 +16,13 @@ User = get_user_model()
 class AchievementAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
+    ordering = ('id',)
 
 @admin.register(OwnershipStatus)
 class OwnershipStatusAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
+    ordering = ('id',)
 
 try:
     admin.site.register(User)

@@ -54,7 +54,6 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 cp .env.example .env
 ./env/bin/python manage.py migrate
-./env/bin/python manage.py collectstatic --noinput
 ./env/bin/python manage.py createsuperuser
 ./env/bin/python manage.py runserver 127.0.0.1:8000
 ```
@@ -68,7 +67,6 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 Copy-Item .env.example .env
 env\Scripts\python.exe manage.py migrate
-env\Scripts\python.exe manage.py collectstatic --noinput
 env\Scripts\python.exe manage.py createsuperuser
 env\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 ```
