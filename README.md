@@ -118,6 +118,16 @@ docker compose -f docker-compose.server.yml --env-file .env up -d
 
 ## REST API эндпоинты
 
+## Postman
+
+Для ручной проверки API используйте коллекцию:
+
+- [postman/kittygram_api_checks.postman_collection.json](postman/kittygram_api_checks.postman_collection.json)
+
+Коллекция рассчитана на запуск в Docker по адресу `http://127.0.0.1:80` и использует `root/root` для получения JWT. Если запускаете проект локально на `127.0.0.1:8000`, поменяйте `baseUrl`, `username` и `password` в переменных коллекции.
+
+Внутри коллекции 10 запросов: публичные проверки статусов, фильтрации и пагинации, а также проверка JWT и прав администратора.
+
 ### Аутентификация
 
 | Метод | URL                    | Описание                                             |

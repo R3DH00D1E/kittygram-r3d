@@ -1,0 +1,473 @@
+{
+  "info": {
+    "_postman_id": "c9de6f67-7c45-4aaf-8e75-d9af4c5f5570",
+    "name": "Kittygram API",
+    "description": "Коллекция для проверки API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:80"
+    },
+    {
+      "key": "username",
+      "value": "root"
+    },
+    {
+      "key": "password",
+      "value": "root"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "testStatusName",
+      "value": "Тест через JWT (Postman)"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Public - GET /ownership-statuses/",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Has paginated payload', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ownership-statuses/?page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ownership-statuses",
+            ""
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 Public helper - GET /api/ownership-statuses/",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Helper returns success=true', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/ownership-statuses/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "ownership-statuses",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 Public - GET /cats/ (page)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Paginated response has results', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cats/?page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cats",
+            ""
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 Public - GET /cats/?color=White&page=1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Paginated response has results', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cats/?color=White&page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cats",
+            ""
+          ],
+          "query": [
+            {
+              "key": "color",
+              "value": "White"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 Public - GET /cats/?owner=1&page=1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Paginated response has results', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cats/?owner=1&page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cats",
+            ""
+          ],
+          "query": [
+            {
+              "key": "owner",
+              "value": "1"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 Public - GET /cats/?ownership_status=1&page=1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Paginated response has results', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cats/?ownership_status=1&page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cats",
+            ""
+          ],
+          "query": [
+            {
+              "key": "ownership_status",
+              "value": "1"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 Unauthorized - POST /ownership-statuses/",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"No Auth Status\",\n  \"description\": \"Должен вернуть 401\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ownership-statuses/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ownership-statuses",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 Auth - POST /auth/jwt/create/ (save token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const jsonData = pm.response.json();",
+              "if (jsonData.access) {",
+              "    pm.collectionVariables.set('accessToken', jsonData.access);",
+              "}",
+              "pm.test('Access token saved', function () {",
+              "    pm.expect(pm.collectionVariables.get('accessToken')).to.not.eql('');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/jwt/create/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "jwt",
+            "create",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 Authorized - POST /ownership-statuses/",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('testStatusName', `Тест через JWT (Postman) ${Date.now()}`);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{testStatusName}}\",\n  \"description\": \"Проверка авторизованного создания\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ownership-statuses/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ownership-statuses",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 Authorized - GET /users/",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Users response has results', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('results');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/?page=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            ""
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
