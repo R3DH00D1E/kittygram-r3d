@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN chmod +x /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh \
+    && if [ ! -f /app/.env ]; then cp /app/.env.example /app/.env; fi
 
 EXPOSE 80
 

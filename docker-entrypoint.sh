@@ -1,26 +1,31 @@
 #!/bin/sh
 set -e
 
+if [ -f /app/.env ]; then
+    set -o allexport
+    # shellcheck disable=SC1091
+    . /app/.env
+    set +o allexport
+fi
+
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
-DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-root}
-DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-root}
-DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
-
-python manage.py shell << END
-from django.contrib.auth import get_user_model
+if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
+    python manage.py shell <<'PY'
 import os
+from django.contrib.auth import get_user_model
 User = get_user_model()
-username = os.getenv('DJANGO_SUPERUSER_USERNAME', 'root')
-email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-password = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'root')
-
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username=username, email=email, password=password)
-    print(f"Superuser '{username}' created successfully.")
-else:
-    print("Superuser already exists.")
-END
+username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
+password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+email = os.environ.get('DJANGO_SUPERUSER_EMAIL', '')
+if username and password:
+        if not User.objects.filter(username=username).exists():
+                User.objects.create_superuser(username=username, email=email, password=password)
+                print(f"Superuser '{username}' created.")
+        else:
+                print(f"Superuser '{username}' already exists.")
+PY
+fi
 
 exec "$@"
