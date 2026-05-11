@@ -375,7 +375,7 @@ Workflow находится по пути: `.github/workflows/deploy.yml`
 1. Собирает Docker-образ
 2. Пушит образ в GitHub Container Registry (GHCR)
 3. Подключается к серверу по SSH
-4. Копирует конфиг `docker-compose.server.yml` на сервер
+4. Копирует конфиг `docker-compose.yml` на сервер
 5. Создает/обновляет `.env` на сервере
 6. Выполняет `docker compose pull` и `docker compose up -d`
 
