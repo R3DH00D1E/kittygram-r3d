@@ -18,6 +18,7 @@
 - Python 3.9+
 - Django 3.2.3
 - Django REST Framework 3.12.4
+- django-filter 23.5
 - Djoser 2.1.0 (аутентификация)
 - SimpleJWT 4.8.0 (JWT токены)
 - Pillow 11.3.0 (обработка изображений)
@@ -150,6 +151,8 @@ docker compose -f docker-compose.server.yml --env-file .env up -d
 
 - `color` - фильтр по окрасу
 - `owner` - фильтр по владельцу (по ID пользователя)
+- `ownership_status` - фильтр по статусу владения
+- Ответы списка пагинированы, доступен параметр `page`
 
 ### Достижения
 

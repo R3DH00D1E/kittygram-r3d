@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Achievement, Cat, User, CHOICES, OwnershipStatus
 from django.utils import timezone
@@ -17,7 +18,6 @@ from django.conf import settings
 
 from .serializers import AchievementSerializer, CatSerializer, OwnershipStatusSerializer, UserSerializer
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import BasePermission
 
 
@@ -39,10 +39,10 @@ class IsOwnerOrAdmin:
         return user.is_staff or user.is_superuser or obj.owner_id == user.id
 
 
-class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
+class IsPublicReadOnlyOrAdmin(BasePermission):
     def has_permission(self, request, view):
         if request.method in ('GET', 'HEAD', 'OPTIONS'):
-            return request.user.is_authenticated
+            return True
         return request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
 
     def has_object_permission(self, request, view, obj):
@@ -53,7 +53,8 @@ class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
     serializer_class = CatSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [SearchFilter, OrderingFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['color', 'owner', 'ownership_status']
     search_fields = ['name', 'color']
     ordering_fields = ['id', 'name', 'birth_year']
     ordering = ['-id']
@@ -89,8 +90,9 @@ class UserViewSet(viewsets.ModelViewSet):
 class OwnershipStatusViewSet(viewsets.ModelViewSet):
     queryset = OwnershipStatus.objects.all().order_by('id')
     serializer_class = OwnershipStatusSerializer
-    permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
-    filter_backends = [SearchFilter, OrderingFilter]
+    permission_classes = [IsPublicReadOnlyOrAdmin]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['name']
     search_fields = ['name', 'description']
     ordering_fields = ['id', 'name']
     ordering = ['name']
@@ -404,7 +406,6 @@ def api_update_cat_status(request, cat_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
-@login_required(login_url='login')
 @require_http_methods(["GET"])
 def api_list_ownership_statuses(request):
     try:
